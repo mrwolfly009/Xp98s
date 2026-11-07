@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CyberTermux Terminal Simulator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Fira Code & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        termGreen: '#00ff66',
+                        termCyan: '#00f3ff',
+                        termPink: '#ff007f',
+                        termAmber: '#ffb000',
+                        termBg: '#0a0d12',
+                        termCard: '#111622'
+                    },
+                    fontFamily: {
+                        mono: ['"Fira Code"', '"JetBrains Mono"', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Terminal CSS Themes & Animations */
+        :root {
+            --term-color: #00ff66;
+            --term-glow: rgba(0, 255, 102, 0.4);
+            --term-prompt: #00f3ff;
+            --term-bg: #0a0d12;
+            --term-header: #121824;
+        }
+
+        .theme-cyberpunk {
+            --term-color: #ff007f;
+            --term-glow: rgba(255, 0, 127, 0.4);
+            --term-prompt: #ffe600;
+            --term-bg: #12001a;
+            --term-header: #240033;
+        }
+
+        .theme-cyan {
+            --term-color: #00f3ff;
+            --term-glow: rgba(0, 243, 255, 0.4);
+            --term-prompt: #00ff66;
+            --term-bg: #03131a;
+            --term-header: #082533;
+        }
+
+        .theme-amber {
+            --term-color: #ffb000;
+            --term-glow: rgba(255, 176, 0, 0.4);
+            --term-prompt: #ff5500;
+            --term-bg: #1a0f00;
+            --term-header: #331e00;
+        }
+
+        body {
+            background-color: var(--term-bg);
+            color: var(--term-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-family: 'Fira Code', monospace;
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            touch-action: manipulation;
+        }
+
+        .terminal-header {
+            background-color: var(--term-header);
+            border-bottom: 1px solid var(--term-color);
+            box-shadow: 0 2px 10px var(--term-glow);
+        }
+
+        .terminal-text {
+            color: var(--term-color);
+            text-shadow: 0 0 5px var(--term-glow);
+        }
+
+        .prompt-text {
+            color: var(--term-prompt);
+        }
+
+        /* Scanline effect */
+        .scanline {
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0, 0, 0, 0.3) 50%,
+                rgba(0, 0, 0, 0.3)
+            );
+            background-size: 100% 4px;
+        }
+
+        /* Scroll fix for terminal body */
+        #terminalContainer {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            word-break: break-all;
+            padding: 12px;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--term-color);
+            border-radius: 3px;
+            opacity: 0.5;
+        }
+
+        /* Blinking Cursor */
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 1.2em;
+            background-color: var(--term-color);
+            vertical-align: middle;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        /* FIX: Remove white background and outline from input field */
+        #cliInput {
+            background-color: transparent !important;
+            color: var(--term-color) !important;
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        #cliInput:focus {
+            background-color: transparent !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Matrix Canvas & Overlay Elements */
+        #matrixCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 40;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        #matrixCanvas.active {
+            opacity: 0.95;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        #matrixCloseBtn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 50;
+            display: none;
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid var(--term-color);
+            color: var(--term-color);
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--term-glow);
+        }
+        #matrixCloseBtn:active {
+            transform: scale(0.95);
+        }
+
+        /* Virtual Key Button Press styling */
+        .v-key {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--term-color);
+            color: var(--term-color);
+            transition: all 0.1s ease;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .v-key:active {
+            background: var(--term-color);
+            color: var(--term-bg);
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body class="select-none">
+
+    <!-- Background Scanline Effect -->
+    <div class="pointer-events-none absolute inset-0 scanline z-10 opacity-30"></div>
+
+    <!-- Matrix Animation Canvas Overlay & Close Button -->
+    <canvas id="matrixCanvas"></canvas>
+    <button id="matrixCloseBtn" onclick="stopMatrix()"><i class="fa-solid fa-xmark"></i> EXIT MATRIX</button>
+
+    <!-- Top Navigation Header -->
+    <header class="terminal-header flex items-center justify-between px-4 py-2.5 z-30 flex-shrink-0">
+        <div class="flex items-center space-x-3">
+            <div class="flex space-x-1.5">
+                <span class="w-3 h-3 rounded-full bg-red-500 inline-block cursor-pointer hover:opacity-80" id="closeBtn"></span>
+                <span class="w-3 h-3 rounded-full bg-yellow-500 inline-block cursor-pointer hover:opacity-80" id="minBtn"></span>
+                <span class="w-3 h-3 rounded-full bg-green-500 inline-block cursor-pointer hover:opacity-80" id="maxBtn"></span>
+            </div>
+            <span class="text-xs sm:text-sm font-bold tracking-wider terminal-text flex items-center gap-1.5">
+                <i class="fa-solid fa-terminal"></i> Termux-Cyber v3.8.0
+            </span>
+        </div>
+        
+        <div class="flex items-center space-x-2 text-xs">
+            <!-- Help Modal Trigger -->
+            <button id="quickHelpBtn" class="px-2 py-1 rounded border border-current hover:opacity-80 transition flex items-center gap-1">
+                <i class="fa-solid fa-circle-question"></i>
+                <span class="hidden sm:inline">Commands</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Terminal Output & Input Area -->
+    <main id="terminalContainer" class="font-mono text-sm sm:text-base leading-relaxed z-0">
+        <!-- Dynamic Terminal Output Lines Go Here -->
+        <div id="output"></div>
+
+        <!-- Active Input Line -->
+        <div class="flex items-center flex-wrap mt-1" id="inputLine">
+            <span id="prompt" class="prompt-text font-bold mr-2">user@cyber-termux:~$</span>
+            <div class="flex-1 flex items-center min-w-[150px] relative">
+                <input type="text" id="cliInput" class="w-full bg-transparent outline-none border-none terminal-text caret-transparent p-0 m-0 font-mono" autocomplete="off" spellcheck="false" title="Terminal Input">
+                <span id="virtualCursor" class="cursor"></span>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Virtual Toolbar / Controller -->
+    <footer class="w-full bg-black/80 border-t border-current p-2 z-30 flex-shrink-0 flex items-center justify-between gap-1 sm:gap-2 overflow-x-auto">
+        <button class="v-key text-xs font-semibold px-2.5 py-1.5 rounded flex-1 text-center" onclick="handleVirtualKey('Tab')">Tab</button>
+        <button class="v-key text-xs font-semibold px-2.5 py-1.5 rounded flex-1 text-center" onclick="handleVirtualKey('Ctrl')">Ctrl</button>
+        <button class="v-key text-xs font-semibold px-2.5 py-1.5 rounded flex-1 text-center" onclick="handleVirtualKey('Esc')">Esc</button>
+        <button class="v-key text-xs font-semibold px-2.5 py-1.5 rounded flex-1 text-center" onclick="handleVirtualKey('ArrowUp')"><i class="fa-solid fa-arrow-up"></i></button>
+        <button class="v-key text-xs font-semibold px-2.5 py-1.5 rounded flex-1 text-center" onclick="handleVirtualKey('ArrowDown')"><i class="fa-solid fa-arrow-down"></i></button>
+        <button class="v-key text-xs font-semibold px-2.5 py-1.5 rounded flex-1 text-center" onclick="handleVirtualKey('Clear')">CLS</button>
+        <button class="v-key text-xs font-semibold px-2.5 py-1.5 rounded flex-1 text-center" onclick="handleVirtualKey('History')">Hist</button>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // DOM Elements
+        const terminalContainer = document.getElementById('terminalContainer');
+        const outputDiv = document.getElementById('output');
+        const cliInput = document.getElementById('cliInput');
+        const promptSpan = document.getElementById('prompt');
+        const matrixCanvas = document.getElementById('matrixCanvas');
+        const matrixCloseBtn = document.getElementById('matrixCloseBtn');
+        const quickHelpBtn = document.getElementById('quickHelpBtn');
+
+        // State Management
+        let commandHistory = [];
+        let historyIndex = -1;
+        let isReplMode = false;
+        let replType = null;
+        let currentTheme = 'green';
+        let soundEnabled = true; // SFX always enabled
+
+        // Web Audio Context for Retro Keypress Beeps
+        let audioCtx = null;
+
+        function playKeySound() {
+            if (!soundEnabled) return;
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(440 + Math.random() * 200, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.05);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.05);
+            } catch(e) {}
+        }
+
+        // Expanded Available Commands List
+        const AVAILABLE_COMMANDS = [
+            'help', 'clear', 'cls', 'matrix', 'neofetch', 'fetch', 'js', 'node',
+            'c', 'gcc', 'cpp', 'g++', 'python', 'echo', 'theme', 'cowsay', 
+            'date', 'time', 'quote', 'sudo', 'banner', 'history', 'exit', 
+            'joke', 'calc', 'roll', 'game', 'guess', 'ls', 'cd', 'cat', 'pwd', 
+            'ping', 'scan', 'nmap', 'whoami', 'uptime', 'sysinfo', 'mkdir', 
+            'touch', 'rm', 'hash', 'cipher', 'hack', 'sl', 'train', 'coin', 'flip', '8ball', 'fortune'
+        ];
+
+        // Virtual File System State
+        const VIRTUAL_FS = {
+            '~': {
+                'about.txt': 'Termux Cyber Terminal v3.8.0\nCreated for fun mobile coding and retro simulation!',
+                'skills.txt': 'HTML5, CSS3, JavaScript, TailwindCSS, Python, C++, Linux Shell',
+                'secret.txt': '🔑 Top Secret Key: 42-CYBER-MATRIX-2026',
+                'notes.txt': 'Remember to run "game" when bored!'
+            },
+            '~/projects': {
+                'app.js': 'console.log("Hello Cyber World!");',
+                'main.c': '#include <stdio.h>\nint main() {\n  printf("Hello C World!\\n");\n  return 0;\n}',
+                'main.cpp': '#include <iostream>\nusing namespace std;\nint main() {\n  cout << "Hello C++ World!" << endl;\n  return 0;\n}'
+            }
+        };
+        let currentDir = '~';
+
+        // Game State
+        let gameActive = false;
+        let targetNumber = null;
+        let gameAttempts = 0;
+
+        // Themes Config
+        const THEMES = {
+            green: '',
+            cyberpunk: 'theme-cyberpunk',
+            cyan: 'theme-cyan',
+            amber: 'theme-amber'
+        };
+
+        window.onload = () => {
+            cliInput.focus();
+            printWelcomeBanner();
+        };
+
+        terminalContainer.addEventListener('click', () => {
+            cliInput.focus();
+        });
+
+        function printWelcomeBanner() {
+            const banner = `
+<pre class="font-mono text-xs sm:text-sm leading-none font-bold">
+   ___ ____   ____ ___  ___   _   _ _____ ___  _   _ 
+  / __/ ___| / ___/ _ \\/ _ \\ | | | | ____/ _ \\| | | |
+ | |  \\___ \\| |  | | | | | | || |_| |  _|| | | | |_| |
+ | |______) | |__| |_| | |_| ||  _  | |__| |_| |  _  |
+  \\____|____/ \\____\\___/ \\___/ |_| |_|_____\\___/|_| |_|
+</pre>
+<div class="mt-2 text-xs sm:text-sm">
+ <span class="font-bold">Welcome to CyberTermux OS Mobile Shell!</span><br>
+ Type <span class="underline cursor-pointer font-bold" onclick="executeCommand('help')">help</span> to list all interactive commands.<br>
+ Try running: <span class="font-bold">js console.log(5+5)</span> | <span class="font-bold">c printf("Hello");</span> | <span class="font-bold">hack</span>
+</div>
+<hr class="my-3 border-current opacity-30">
+`;
+            printLine(banner, true);
+        }
+
+        function scrollToBottom() {
+            terminalContainer.scrollTop = terminalContainer.scrollHeight;
+        }
+
+        function printLine(text, isHTML = false) {
+            const line = document.createElement('div');
+            line.className = 'my-1';
+            if (isHTML) {
+                line.innerHTML = text;
+            } else {
+                line.textContent = text;
+            }
+            outputDiv.appendChild(line);
+            scrollToBottom();
+        }
+
+        cliInput.addEventListener('keydown', (e) => {
+            playKeySound();
+
+            if (e.key === 'Enter') {
+                const rawInput = cliInput.value.trim();
+                const currentPrompt = promptSpan.innerText;
+                
+                printLine(`<span class="prompt-text font-bold">${currentPrompt}</span> ${escapeHTML(cliInput.value)}`, true);
+
+                cliInput.value = '';
+
+                if (rawInput.length > 0) {
+                    commandHistory.push(rawInput);
+                    historyIndex = commandHistory.length;
+                }
+
+                if (isReplMode) {
+                    handleReplInput(rawInput);
+                } else if (gameActive) {
+                    handleGameInput(rawInput);
+                } else {
+                    executeCommand(rawInput);
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    cliInput.value = commandHistory[historyIndex];
+                }
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (historyIndex < commandHistory.length - 1) {
+                    historyIndex++;
+                    cliInput.value = commandHistory[historyIndex];
+                } else {
+                    historyIndex = commandHistory.length;
+                    cliInput.value = '';
+                }
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                handleTabAutocomplete();
+            } else if (e.key === 'Escape') {
+                stopMatrix();
+            }
+        });
+
+        function handleTabAutocomplete() {
+            const currentVal = cliInput.value.trim();
+            if (!currentVal) return;
+
+            const matches = AVAILABLE_COMMANDS.filter(cmd => cmd.startsWith(currentVal.toLowerCase()));
+            if (matches.length === 1) {
+                cliInput.value = matches[0] + ' ';
+            } else if (matches.length > 1) {
+                printLine(`<span class="prompt-text font-bold">${promptSpan.innerText}</span> ${currentVal}`, true);
+                printLine(matches.join('   '));
+            }
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
+
+        function executeCommand(inputStr) {
+            if (!inputStr) return;
+
+            const parts = inputStr.trim().split(/\s+/);
+            const cmd = parts[0].toLowerCase();
+            const args = parts.slice(1);
+
+            switch (cmd) {
+                case 'help': showHelp(); break;
+                case 'joke': showJoke(); break;
+                case 'calc': runCalc(args); break;
+                case 'roll': rollDice(); break;
+                case 'coin':
+                case 'flip': flipCoin(); break;
+                case '8ball':
+                case 'fortune': ask8Ball(args.join(' ')); break;
+                case 'hack': runHollywoodHack(); break;
+                case 'sl':
+                case 'train': runSteamLocomotive(); break;
+                case 'game':
+                case 'guess': startGame(); break;
+                case 'ls': listFiles(); break;
+                case 'pwd': printLine(currentDir); break;
+                case 'cd': changeDir(args[0]); break;
+                case 'cat': readFile(args[0]); break;
+                case 'mkdir': makeDir(args[0]); break;
+                case 'touch': createFile(args[0], args.slice(1).join(' ')); break;
+                case 'rm': removeFile(args[0]); break;
+                case 'js':
+                case 'node': runJSCode(args.join(' ')); break;
+                case 'c':
+                case 'gcc': runCCode(args.join(' ')); break;
+                case 'cpp':
+                case 'g++': runCppCode(args.join(' ')); break;
+                case 'clear':
+                case 'cls': outputDiv.innerHTML = ''; break;
+                case 'matrix': toggleMatrix(); break;
+                case 'neofetch':
+                case 'fetch': showNeofetch(); break;
+                case 'sysinfo': showSysInfo(); break;
+                case 'whoami': printLine('root@cyber-termux (UID: 0 - Superuser Permissions)'); break;
+                case 'uptime': showUptime(); break;
+                case 'ping': runPing(args[0]); break;
+                case 'scan':
+                case 'nmap': runPortScan(args[0]); break;
+                case 'hash':
+                case 'cipher': generateHash(args.join(' ')); break;
+                case 'python': enterRepl(cmd); break;
+                case 'echo': printLine(args.join(' ')); break;
+                case 'theme': changeTheme(args[0]); break;
+                case 'cowsay': showCowsay(args.join(' ') || 'Moo! Welcome to CyberTermux.'); break;
+                case 'date':
+                case 'time': printLine(new Date().toLocaleString()); break;
+                case 'quote': showQuote(); break;
+                case 'sudo': printLine('<span class="text-red-400 font-bold">Access Denied: You are already superuser.</span>', true); break;
+                case 'banner': printWelcomeBanner(); break;
+                case 'history': showHistory(); break;
+                default: printLine(`<span class="text-red-400">Command not found: '${escapeHTML(cmd)}'. Type 'help'.</span>`, true); break;
+            }
+        }
+
+        function showHelp() {
+            const helpText = `
+<div class="my-1 font-bold">AVAILABLE COMMANDS:</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 my-2 text-xs sm:text-sm">
+  <div><b class="prompt-text">help</b> - List commands</div>
+  <div><b class="prompt-text">js / node [code]</b> - Run JavaScript code</div>
+  <div><b class="prompt-text">c / gcc [code]</b> - C Compiler simulator</div>
+  <div><b class="prompt-text">cpp / g++ [code]</b> - C++ Compiler simulator</div>
+  <div><b class="prompt-text">hack</b> - Hollywood hacking sequence</div>
+  <div><b class="prompt-text">sl / train</b> - ASCII train animation</div>
+  <div><b class="prompt-text">coin / 8ball</b> - Decision & fortune game</div>
+  <div><b class="prompt-text">ls / cd / cat</b> - Virtual file system</div>
+  <div><b class="prompt-text">mkdir / touch / rm</b> - File operations</div>
+  <div><b class="prompt-text">ping / scan / nmap</b> - Network simulators</div>
+  <div><b class="prompt-text">sysinfo / uptime / whoami</b> - System info</div>
+  <div><b class="prompt-text">theme [green/cyberpunk/cyan/amber]</b></div>
+  <div><b class="prompt-text">clear / cls / matrix / neofetch</b></div>
+</div>
+`;
+            printLine(helpText, true);
+        }
+
+        // JS Evaluator Command
+        function runJSCode(code) {
+            if (!code) { enterRepl('js'); return; }
+            try {
+                const res = eval(code);
+                printLine(`<span class="text-yellow-300">==> ${escapeHTML(String(res))}</span>`, true);
+            } catch (err) {
+                printLine(`<span class="text-red-400">JS Error: ${escapeHTML(err.message)}</span>`, true);
+            }
+        }
+
+        // C Code Interpreter Simulation
+        function runCCode(code) {
+            if (!code) {
+                printLine('Usage: c main() { printf("Hello World"); }');
+                return;
+            }
+            printLine('<span class="text-cyan-300">Compiling C code with GCC v13.2.0...</span>', true);
+            setTimeout(() => {
+                let output = "";
+                // Match printf statements
+                const matches = [...code.matchAll(/printf\s*\(\s*["']([^"']+)["']\s*\)/g)];
+                if (matches.length > 0) {
+                    output = matches.map(m => m[1].replace(/\\n/g, '\n')).join('');
+                } else if (code.includes('main')) {
+                    output = "[Process exited with code 0]";
+                } else {
+                    output = "Hello C World! (Compilation Successful)";
+                }
+                printLine(`<span class="text-green-300 font-bold">${escapeHTML(output)}</span>`, true);
+            }, 400);
+        }
+
+        // C++ Code Interpreter Simulation
+        function runCppCode(code) {
+            if (!code) {
+                printLine('Usage: cpp cout << "Hello C++";');
+                return;
+            }
+            printLine('<span class="text-cyan-300">Compiling C++ code with G++ v13.2.0...</span>', true);
+            setTimeout(() => {
+                let output = "";
+                // Match cout statements
+                const matches = [...code.matchAll(/cout\s*<<\s*["']([^"']+)["']/g)];
+                if (matches.length > 0) {
+                    output = matches.map(m => m[1].replace(/\\n/g, '\n')).join('');
+                } else if (code.includes('main')) {
+                    output = "[Process exited with code 0]";
+                } else {
+                    output = "Hello C++ World! (G++ Executed)";
+                }
+                printLine(`<span class="text-green-300 font-bold">${escapeHTML(output)}</span>`, true);
+            }, 400);
+        }
+
+        // Hollywood Hack Simulation
+        function runHollywoodHack() {
+            printLine('<span class="text-red-500 font-bold">BYPASSING SECURITY FIREWALL...</span>', true);
+            const hackLines = [
+                "Connecting to 192.168.1.254:8080...",
+                "Injecting payload: \x1b[32m0x90 0x90 0x90 NOP SLED\x1b[0m",
+                "Cracking MD5 hash: e10adc3949ba59abbe56e057f20f883e -> '123456'",
+                "Bypassing 2FA Auth token guard...",
+                "Accessing mainframe database nodes...",
+                "Downloading /etc/shadow passwords...",
+                "[====================================>] 100% COMPLETE!",
+                "SYSTEM OVERRIDDEN: ROOT ACCESS GRANTED."
+            ];
+            hackLines.forEach((line, idx) => {
+                setTimeout(() => {
+                    printLine(`<span class="text-green-400 font-mono">${line}</span>`, true);
+                }, (idx + 1) * 350);
+            });
+        }
+
+        // Steam Locomotive Train ASCII Animation
+        function runSteamLocomotive() {
+            const train = `
+      (  ) (@@) ( )  (@)  ()    @@  .  (  )
+  ( (  (  ( (  (  (  (  ( (  ) (  )
+ ( (  (  ( (  (  (  (  ( (  ) (  )
+         (_________)
+      __  ||_____||  __
+     |  |_||_____||_|  |
+   __|_|_____________|_|__
+  |                       |
+  |  CYBER EXPRESS 2026   |
+~~|_______________________|~~~~~~
+  (o) (o)   (o) (o)   (o) (o)
+`;
+            printLine(`<pre class="text-yellow-400 font-bold">${train}</pre>`, true);
+        }
+
+        // Coin Toss
+        function flipCoin() {
+            const res = Math.random() > 0.5 ? "HEADS 🪙" : "TAILS 🪙";
+            printLine(`<span class="text-yellow-300 font-bold">Flipping coin... Result: ${res}</span>`, true);
+        }
+
+        // Magic 8-Ball Subconscious Decision
+        function ask8Ball(question) {
+            const responses = [
+                "It is certain.", "Reply hazy, try again.", "Don't count on it.",
+                "Outlook good.", "Signs point to yes.", "My sources say no.",
+                "Without a doubt.", "Concentrate and ask again."
+            ];
+            const ans = responses[Math.floor(Math.random() * responses.length)];
+            printLine(`🎱 <span class="text-cyan-300">${ans}</span>`, true);
+        }
+
+        function showJoke() {
+            const jokes = [
+                "কেন প্রোগ্রামাররা চশমা পরেন? কারণ তারা C# করতে পারেন না! 👓",
+                "পৃথিবীতে ১০ ধরণের মানুষ আছে: যারা বাইনারি বোঝেন এবং যারা বোঝেন না। 🤖",
+                "বউ: বাজারে যাও, ১ লিটার দুধ আনো। ডিম থাকলে ৬টা আনো। প্রোগ্রামার স্বামী: ৬ লিটার দুধ! 🥛"
+            ];
+            const joke = jokes[Math.floor(Math.random() * jokes.length)];
+            printLine(`<div class="text-yellow-300 my-1">${escapeHTML(joke)}</div>`, true);
+        }
+
+        function runCalc(args) {
+            if (args.length === 0) { printLine('Usage: calc (10 + 5) * 2'); return; }
+            const expr = args.join('');
+            try {
+                const res = Function(`'use strict'; return (${expr})`)();
+                printLine(`<span class="text-green-300 font-bold">Result: ${res}</span>`, true);
+            } catch (err) {
+                printLine(`<span class="text-red-400">Math Error</span>`, true);
+            }
+        }
+
+        function rollDice() {
+            const val = Math.floor(Math.random() * 6) + 1;
+            printLine(`🎲 You rolled a <b class="prompt-text">${val}</b>!`);
+        }
+
+        function startGame() {
+            gameActive = true;
+            targetNumber = Math.floor(Math.random() * 50) + 1;
+            gameAttempts = 0;
+            promptSpan.innerText = 'guess(1-50)>';
+            printLine('<span class="text-yellow-300 font-bold">🎮 Number Guessing Game Started! (1-50)</span>', true);
+        }
+
+        function handleGameInput(input) {
+            if (input.trim() === 'exit') {
+                gameActive = false;
+                promptSpan.innerText = `${currentDir} $`;
+                printLine('Game quit.');
+                return;
+            }
+            const num = parseInt(input, 10);
+            gameAttempts++;
+            if (num === targetNumber) {
+                printLine(`<span class="text-green-400 font-bold">🎉 Correct! Found in ${gameAttempts} attempts!</span>`, true);
+                gameActive = false;
+                promptSpan.innerText = `${currentDir} $`;
+            } else if (num < targetNumber) {
+                printLine('📈 Too low!');
+            } else {
+                printLine('📉 Too high!');
+            }
+        }
+
+        function listFiles() {
+            const folder = VIRTUAL_FS[currentDir];
+            if (!folder) { printLine('Directory empty.'); return; }
+            const files = Object.keys(folder).map(f => `<span class="text-cyan-300 font-bold me-3">${f}</span>`).join('  ');
+            printLine(files, true);
+        }
+
+        function changeDir(dir) {
+            if (!dir || dir === '~' || dir === '/') currentDir = '~';
+            else if (VIRTUAL_FS[`~/${dir}`]) currentDir = `~/${dir}`;
+            else if (dir === '..' || dir === '../') currentDir = '~';
+            else { printLine(`<span class="text-red-400">cd: no such directory: ${escapeHTML(dir)}</span>`, true); return; }
+            promptSpan.innerText = `${currentDir} $`;
+        }
+
+        function readFile(fileName) {
+            const folder = VIRTUAL_FS[currentDir];
+            if (folder && folder[fileName]) printLine(escapeHTML(folder[fileName]));
+            else printLine(`<span class="text-red-400">File not found</span>`, true);
+        }
+
+        function makeDir(dirName) {
+            if (!dirName) { printLine('Usage: mkdir [dirname]'); return; }
+            const target = `${currentDir}/${dirName}`;
+            if (!VIRTUAL_FS[target]) {
+                VIRTUAL_FS[target] = {};
+                printLine(`<span class="text-green-300">Created directory: ${escapeHTML(dirName)}</span>`, true);
+            } else {
+                printLine(`<span class="text-red-400">Directory already exists</span>`, true);
+            }
+        }
+
+        function createFile(fileName, content) {
+            if (!fileName) { printLine('Usage: touch [filename] [content]'); return; }
+            if (!VIRTUAL_FS[currentDir]) VIRTUAL_FS[currentDir] = {};
+            VIRTUAL_FS[currentDir][fileName] = content || 'Empty file';
+            printLine(`<span class="text-green-300">File '${escapeHTML(fileName)}' created.</span>`, true);
+        }
+
+        function removeFile(fileName) {
+            if (!fileName) { printLine('Usage: rm [filename]'); return; }
+            if (VIRTUAL_FS[currentDir] && VIRTUAL_FS[currentDir][fileName]) {
+                delete VIRTUAL_FS[currentDir][fileName];
+                printLine(`<span class="text-yellow-300">Removed file: ${escapeHTML(fileName)}</span>`, true);
+            } else {
+                printLine(`<span class="text-red-400">File not found</span>`, true);
+            }
+        }
+
+        function runPing(host) {
+            const target = host || 'google.com';
+            printLine(`PING ${escapeHTML(target)} (142.250.190.46): 56 data bytes`);
+            let count = 0;
+            const interval = setInterval(() => {
+                count++;
+                const time = (Math.random() * 20 + 10).toFixed(2);
+                printLine(`64 bytes from ${escapeHTML(target)}: icmp_seq=${count} ttl=116 time=${time} ms`);
+                if (count >= 4) {
+                    clearInterval(interval);
+                    printLine(`--- ${escapeHTML(target)} ping statistics ---`);
+                    printLine(`4 packets transmitted, 4 packets received, 0.0% packet loss`);
+                }
+            }, 600);
+        }
+
+        function runPortScan(target) {
+            const host = target || '192.168.1.1';
+            printLine(`Starting Nmap 7.94 ( https://nmap.org ) at ${new Date().toLocaleTimeString()}`);
+            printLine(`Nmap scan report for ${escapeHTML(host)}`);
+            printLine(`PORT     STATE SERVICE`);
+            printLine(`21/tcp   OPEN  ftp`);
+            printLine(`22/tcp   OPEN  ssh`);
+            printLine(`80/tcp   OPEN  http`);
+            printLine(`443/tcp  OPEN  https`);
+            printLine(`8080/tcp OPEN  http-proxy`);
+            printLine(`Nmap done: 1 IP address (1 host up) scanned in 1.24 seconds`);
+        }
+
+        function showSysInfo() {
+            printLine(`OS Architecture: ARM64 Cyber Shell`);
+            printLine(`Virtual Memory: 8192 MB (Used: 2140 MB)`);
+            printLine(`Processor: Octa-core CyberCore @ 2.84 GHz`);
+            printLine(`Network State: Connected (Latency: 14ms)`);
+        }
+
+        function showUptime() {
+            const secs = Math.floor(performance.now() / 1000);
+            const mins = Math.floor(secs / 60);
+            printLine(`Uptime: ${mins} minutes, ${secs % 60} seconds`);
+        }
+
+        function generateHash(text) {
+            if (!text) { printLine('Usage: hash [text]'); return; }
+            try {
+                const encoded = btoa(text);
+                printLine(`<span class="text-cyan-300">Base64 Hash: ${encoded}</span>`, true);
+            } catch(e) {
+                printLine('Encoding error.');
+            }
+        }
+
+        async function showNeofetch() {
+            const info = `<pre class="prompt-text font-bold text-xs">
+      _---_
+     /     \\
+    |  O_O  |   CYBER-TERMUX
+    /  \\_/  \\   OS: Termux Mobile Linux 2026
+   //|  |  |\\\\  Theme: ${currentTheme.toUpperCase()}
+  (___|__|___)  Shell: JS-SH 3.8
+</pre>`;
+            printLine(info, true);
+        }
+
+        function enterRepl(type) {
+            isReplMode = true;
+            promptSpan.innerText = `${type}>`;
+            printLine(`Entered ${type.toUpperCase()} REPL. Type 'exit' to leave.`);
+        }
+
+        function handleReplInput(input) {
+            if (input.trim() === 'exit') {
+                isReplMode = false;
+                promptSpan.innerText = `${currentDir} $`;
+                printLine('Exited REPL.');
+                return;
+            }
+            try {
+                printLine(`<span class="text-yellow-300">${eval(input)}</span>`, true);
+            } catch (err) {
+                printLine(`<span class="text-red-400">${err.message}</span>`, true);
+            }
+        }
+
+        function showCowsay(msg) {
+            printLine(`<pre> __________________ \n< ${escapeHTML(msg)} >\n ------------------ \n        \\   ^__^\n         \\  (oo)\\______iss\n            (__)\\       )\\/\\</pre>`, true);
+        }
+
+        function showQuote() {
+            printLine(`<i class="text-yellow-200">"Talk is cheap. Show me the code." - Linus Torvalds</i>`, true);
+        }
+
+        function showHistory() {
+            printLine(commandHistory.map((c, i) => `${i + 1}  ${escapeHTML(c)}`).join('<br>'), true);
+        }
+
+        function changeTheme(themeName) {
+            if (!themeName || !THEMES.hasOwnProperty(themeName.toLowerCase())) {
+                printLine('Themes available: green, cyberpunk, cyan, amber. Example: theme cyberpunk');
+                return;
+            }
+            const name = themeName.toLowerCase();
+            document.body.className = THEMES[name];
+            currentTheme = name;
+            printLine(`Theme switched to: ${name}`);
+        }
+
+        function handleVirtualKey(key) {
+            playKeySound();
+            cliInput.focus();
+            if (key === 'Esc') {
+                stopMatrix();
+            } else if (key === 'Clear') {
+                outputDiv.innerHTML = '';
+            } else if (key === 'History') {
+                showHistory();
+            } else if (key === 'ArrowUp' && commandHistory.length > 0) {
+                if (historyIndex > 0) historyIndex--;
+                cliInput.value = commandHistory[historyIndex] || '';
+            }
+        }
+
+        let matrixInterval = null;
+        const ctx = matrixCanvas.getContext('2d');
+
+        function toggleMatrix() {
+            if (matrixCanvas.classList.contains('active')) {
+                stopMatrix();
+            } else {
+                matrixCanvas.classList.add('active');
+                matrixCloseBtn.style.display = 'block';
+                startMatrix();
+            }
+        }
+
+        function stopMatrix() {
+            if (matrixCanvas.classList.contains('active')) {
+                matrixCanvas.classList.remove('active');
+                matrixCloseBtn.style.display = 'none';
+                clearInterval(matrixInterval);
+                printLine('Matrix animation stopped.');
+            }
+        }
+
+        function startMatrix() {
+            matrixCanvas.width = window.innerWidth;
+            matrixCanvas.height = window.innerHeight;
+            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*';
+            const fontSize = 16;
+            const columns = Math.floor(matrixCanvas.width / fontSize);
+            const rainDrops = Array(columns).fill(1);
+
+            function draw() {
+                ctx.fillStyle = 'rgba(10, 13, 18, 0.08)';
+                ctx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+                ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--term-color') || '#00ff66';
+                ctx.font = fontSize + 'px monospace';
+                for (let i = 0; i < rainDrops.length; i++) {
+                    const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                    ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+                    if (rainDrops[i] * fontSize > matrixCanvas.height && Math.random() > 0.975) rainDrops[i] = 0;
+                    rainDrops[i]++;
+                }
+            }
+
+            if (matrixInterval) clearInterval(matrixInterval);
+            matrixInterval = setInterval(draw, 33);
+        }
+
+        matrixCanvas.addEventListener('click', () => {
+            stopMatrix();
+        });
+
+        quickHelpBtn.addEventListener('click', () => executeCommand('help'));
+        document.getElementById('closeBtn').addEventListener('click', () => outputDiv.innerHTML = '');
+        document.getElementById('minBtn').addEventListener('click', () => outputDiv.innerHTML = '');
+        document.getElementById('maxBtn').addEventListener('click', () => {
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+            else document.exitFullscreen().catch(()=>{});
+        });
+    </script>
+</body>
+</html>
