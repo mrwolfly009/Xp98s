@@ -310,7 +310,7 @@
         // Expanded Available Commands List
         const AVAILABLE_COMMANDS = [
             'help', 'clear', 'cls', 'matrix', 'neofetch', 'fetch', 'js', 'node',
-            'c', 'gcc', 'cpp', 'g++', 'python', 'echo', 'theme', 'cowsay', 
+            'c', 'gcc', 'cpp', 'g++', 'echo', 'theme', 'cowsay', 
             'date', 'time', 'quote', 'sudo', 'banner', 'history', 'exit', 
             'joke', 'calc', 'roll', 'game', 'guess', 'ls', 'cd', 'cat', 'pwd', 
             'ping', 'scan', 'nmap', 'whoami', 'uptime', 'sysinfo', 'mkdir', 
@@ -397,7 +397,7 @@
                 const rawInput = cliInput.value.trim();
                 const currentPrompt = promptSpan.innerText;
                 
-                printLine(`<span class="prompt-text font-bold">${currentPrompt}</span> ${escapeHTML(cliInput.value)}`, true);
+                printLine(`<span class="prompt-text font-bold">${escapeHTML(currentPrompt)}</span> ${escapeHTML(cliInput.value)}`, true);
 
                 cliInput.value = '';
 
@@ -444,7 +444,7 @@
             if (matches.length === 1) {
                 cliInput.value = matches[0] + ' ';
             } else if (matches.length > 1) {
-                printLine(`<span class="prompt-text font-bold">${promptSpan.innerText}</span> ${currentVal}`, true);
+                printLine(`<span class="prompt-text font-bold">${escapeHTML(promptSpan.innerText)}</span> ${currentVal}`, true);
                 printLine(matches.join('   '));
             }
         }
@@ -464,6 +464,7 @@
 
             switch (cmd) {
                 case 'help': showHelp(); break;
+                case 'exit': printLine('Terminal session ended (simulator remains open).'); break;
                 case 'joke': showJoke(); break;
                 case 'calc': runCalc(args); break;
                 case 'roll': rollDice(); break;
@@ -502,7 +503,7 @@
                 case 'nmap': runPortScan(args[0]); break;
                 case 'hash':
                 case 'cipher': generateHash(args.join(' ')); break;
-                case 'python': enterRepl(cmd); break;
+                case 'python': printLine('Python is not installed in this browser simulator. Use js/node for JavaScript.'); break;
                 case 'echo': printLine(args.join(' ')); break;
                 case 'theme': changeTheme(args[0]); break;
                 case 'cowsay': showCowsay(args.join(' ') || 'Moo! Welcome to CyberTermux.'); break;
@@ -521,7 +522,8 @@
 <div class="my-1 font-bold">AVAILABLE COMMANDS:</div>
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 my-2 text-xs sm:text-sm">
   <div><b class="prompt-text">help</b> - List commands</div>
-  <div><b class="prompt-text">js / node [code]</b> - Run JavaScript code</div>
+  <div><b class="prompt-text">js / node [code]</b> - Run JavaScript code (simulated)</div>
+  <div><b class="prompt-text">python</b> - Not available in this browser simulator</div>
   <div><b class="prompt-text">c / gcc [code]</b> - C Compiler simulator</div>
   <div><b class="prompt-text">cpp / g++ [code]</b> - C++ Compiler simulator</div>
   <div><b class="prompt-text">hack</b> - Hollywood hacking sequence</div>
@@ -661,8 +663,10 @@
         function runCalc(args) {
             if (args.length === 0) { printLine('Usage: calc (10 + 5) * 2'); return; }
             const expr = args.join('');
+            if (!/^[0-9+*/().%\s-]+$/.test(expr)) { printLine('Math Error: only numbers and arithmetic operators are allowed.'); return; }
             try {
                 const res = Function(`'use strict'; return (${expr})`)();
+                if (!Number.isFinite(res)) throw new Error('Invalid result');
                 printLine(`<span class="text-green-300 font-bold">Result: ${res}</span>`, true);
             } catch (err) {
                 printLine(`<span class="text-red-400">Math Error</span>`, true);
@@ -705,7 +709,7 @@
         function listFiles() {
             const folder = VIRTUAL_FS[currentDir];
             if (!folder) { printLine('Directory empty.'); return; }
-            const files = Object.keys(folder).map(f => `<span class="text-cyan-300 font-bold me-3">${f}</span>`).join('  ');
+            const files = Object.keys(folder).map(f => `<span class="text-cyan-300 font-bold me-3">${escapeHTML(f)}</span>`).join('  ');
             printLine(files, true);
         }
 
@@ -829,9 +833,9 @@
                 return;
             }
             try {
-                printLine(`<span class="text-yellow-300">${eval(input)}</span>`, true);
+                printLine(`<span class="text-yellow-300">${escapeHTML(String(eval(input)))}</span>`, true);
             } catch (err) {
-                printLine(`<span class="text-red-400">${err.message}</span>`, true);
+                printLine(`<span class="text-red-400">${escapeHTML(err.message)}</span>`, true);
             }
         }
 
@@ -864,12 +868,20 @@
             if (key === 'Esc') {
                 stopMatrix();
             } else if (key === 'Clear') {
-                outputDiv.innerHTML = '';
+                outputDiv.replaceChildren();
             } else if (key === 'History') {
                 showHistory();
+            } else if (key === 'Tab') {
+                handleTabAutocomplete();
             } else if (key === 'ArrowUp' && commandHistory.length > 0) {
                 if (historyIndex > 0) historyIndex--;
                 cliInput.value = commandHistory[historyIndex] || '';
+            } else if (key === 'ArrowDown') {
+                if (historyIndex < commandHistory.length - 1) historyIndex++;
+                else historyIndex = commandHistory.length;
+                cliInput.value = commandHistory[historyIndex] || '';
+            } else if (key === 'Ctrl') {
+                printLine('Ctrl is a modifier key; use your device keyboard for Ctrl shortcuts.');
             }
         }
 
