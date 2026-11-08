@@ -4,20 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>XP OS Simulator</title>
-  <!-- Favicon / Window Logo -->
-<link rel="icon" type="image/png" href="logo2.png">
+  <link rel="icon" type="image/png" href="logo2.png">
   <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#008080">
+  <meta name="theme-color" content="#008080">
 
-  <!-- Google Fonts: Retro Pixel & Monospace Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
-  <!-- FontAwesome Icons for Retro Desktop Feel -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    /* CSS RESET & RETRO STYLING */
     * {
       box-sizing: border-box;
       user-select: none;
@@ -48,7 +44,6 @@
       background-size: 8px 8px;
     }
 
-    /* RETRO 3D BEVEL UTILITIES */
     .bevel-out {
       border-top: 2px solid var(--win-border-light);
       border-left: 2px solid var(--win-border-light);
@@ -90,7 +85,6 @@
       padding: 4px 7px 2px 9px;
     }
 
-    /* DESKTOP ICON SHORTCUTS */
     .desktop-icons {
       position: absolute;
       top: 15px;
@@ -127,7 +121,6 @@
       filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.5));
     }
 
-    /* RETRO WINDOW POPUPS */
     .window {
       position: absolute;
       min-width: 300px;
@@ -187,7 +180,6 @@
       max-height: calc(85vh - 40px);
     }
 
-    /* TASKBAR & START MENU */
     .taskbar {
       position: fixed;
       bottom: 0;
@@ -280,10 +272,9 @@
       color: white;
     }
 
-    /* EXCEL SPREADSHEETS RETRO LAYOUT */
     .excel-container {
       overflow-x: auto;
-      max-height: 250px;
+      max-height: 280px;
       background: #ffffff;
       border: 2px inset var(--win-border-darker);
     }
@@ -309,9 +300,18 @@
     }
 
     table.excel-table tr:nth-child(even) { background-color: #f9f9f9; }
-    table.excel-table tr:hover { background-color: #000080; color: white; }
+    table.excel-table tr:hover { background-color: #f0f0d0; }
 
-    /* RPG HUD & BADGES */
+    /* COLOR CODING FOR EXCEL FIGURES */
+    .figure-green {
+      color: #008000 !important;
+      font-weight: bold;
+    }
+    .figure-red {
+      color: #cc0000 !important;
+      font-weight: bold;
+    }
+
     .rpg-hud {
       display: flex;
       flex-direction: column;
@@ -365,7 +365,6 @@
       text-shadow: 1px 1px 0px black;
     }
 
-    /* CALCULATOR UI */
     .calc-screen {
       background: #000000;
       color: #00ff00;
@@ -391,7 +390,6 @@
       padding: 10px;
     }
 
-    /* BROWSER UI */
     .browser-toolbar {
       display: flex;
       gap: 4px;
@@ -425,7 +423,6 @@
       background: #ffffff;
     }
 
-    /* FORMS & INPUTS */
     .field-group {
       display: flex;
       flex-direction: column;
@@ -446,7 +443,6 @@
       gap: 8px;
     }
 
-    /* AI VERDICT BOX */
     .ai-box {
       background: #000022;
       color: #00ff66;
@@ -468,17 +464,6 @@
       justify-content: space-between;
     }
 
-    .ai-verdict {
-      font-weight: bold;
-      font-size: 1.3rem;
-      color: #ffffff;
-      background: #aa0000;
-      padding: 2px 6px;
-      display: inline-block;
-      margin: 4px 0;
-    }
-
-    /* RETRO POPUP DIALOG */
     .retro-alert {
       position: fixed;
       top: 50%;
@@ -544,7 +529,6 @@
       <i class="fa-solid fa-globe" style="color: #55aaff;"></i>
       <span>Web Browser</span>
     </div>
-    <!-- NEW TERMINAL ICON -->
     <div class="desktop-icon" onclick="openWindow('win-terminal')">
       <i class="fa-solid fa-terminal" style="color: #00ff66;"></i>
       <span>Terminal</span>
@@ -585,68 +569,92 @@
         </div>
       </div>
 
-      <fieldset class="bevel-out" style="padding: 8px; margin-bottom: 10px;">
-        <legend style="font-family: var(--pixel-font); font-size: 9px;">[ LOG DAILY TRANSACTION ]</legend>
-        <form id="personal-form" onsubmit="handlePersonalSubmit(event)">
-          <div class="grid-2">
-            <div class="field-group">
-              <label for="p-type">Type:</label>
-              <select id="p-type" class="bevel-in">
-                <option value="expense">Expense (-)</option>
-                <option value="income">Income (+)</option>
-              </select>
-            </div>
-            <div class="field-group">
-              <label for="p-amount">Amount ($):</label>
-              <input type="number" id="p-amount" step="0.01" class="bevel-in" required placeholder="0.00">
-            </div>
-          </div>
-          <div class="grid-2">
-            <div class="field-group">
-              <label for="p-category">Category:</label>
-              <select id="p-category" class="bevel-in">
-                <option value="Food & Dining">Food & Dining</option>
-                <option value="Rent & Bills">Rent & Bills</option>
-                <option value="Entertainment">Entertainment</option>
-                <option value="Shopping">Shopping</option>
-                <option value="Salary/Allowance">Salary/Allowance</option>
-                <option value="General">General</option>
-              </select>
-            </div>
-            <div class="field-group">
-              <label for="p-date">Date:</label>
-              <input type="date" id="p-date" class="bevel-in" required>
-            </div>
-          </div>
-          <div class="field-group">
-            <label for="p-desc">Description / Memo:</label>
-            <input type="text" id="p-desc" class="bevel-in" placeholder="e.g. Lunch, Bus fare, Salary">
-          </div>
-          <button type="submit" class="bevel-button" style="width: 100%; justify-content: center; font-family: var(--pixel-font); font-size: 9px; margin-top: 4px;">
-            <i class="fa-solid fa-plus"></i> ADD PERSONAL RECORD
-          </button>
-        </form>
-      </fieldset>
-
-      <div style="font-family: var(--pixel-font); font-size: 9px; margin-bottom: 4px;">[ RECENT DAILY LOGS ]</div>
-      <div class="excel-container" style="margin-bottom: 8px;">
-        <table class="excel-table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Cat</th>
-              <th>Desc</th>
-              <th>Amt ($)</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="personal-recent-tbody"></tbody>
-        </table>
+      <div class="personal-tabs" role="tablist" style="display:flex; flex-wrap:wrap; gap:4px; margin-bottom:8px;">
+        <button class="bevel-button" type="button" onclick="switchPersonalTab('dashboard')">DASHBOARD</button>
+        <button class="bevel-button" type="button" onclick="switchPersonalTab('transactions')">TRANSACTIONS</button>
+        <button class="bevel-button" type="button" onclick="switchPersonalTab('budgets')">BUDGETS</button>
+        <button class="bevel-button" type="button" onclick="switchPersonalTab('goals')">SAVINGS GOALS</button>
+        <button class="bevel-button" type="button" onclick="switchPersonalTab('reports')">REPORTS</button>
       </div>
 
-      <button class="bevel-button" onclick="generatePersonalSummaryReport()" style="width: 100%; justify-content: center; font-family: var(--pixel-font); font-size: 9px; background: #000080; color: white;">
-        <i class="fa-solid fa-chart-pie"></i> GENERATE PERSONAL ACCOUNTS REPORT
-      </button>
+      <section id="personal-tab-dashboard" class="personal-tab-panel">
+        <fieldset class="bevel-out" style="padding:8px; margin-bottom:10px;">
+          <legend style="font-family:var(--pixel-font); font-size:9px;">[ PERSONAL FINANCIAL DASHBOARD ]</legend>
+          <div class="grid-2">
+            <div class="bevel-in" style="padding:9px;"><small>NET CASH FLOW</small><div id="p-net-flow" style="font-weight:bold; font-size:16px;">$0.00</div></div>
+            <div class="bevel-in" style="padding:9px;"><small>SAVINGS RATE</small><div id="p-savings-rate" style="font-weight:bold; font-size:16px;">0%</div></div>
+            <div class="bevel-in" style="padding:9px;"><small>THIS MONTH INCOME</small><div id="p-month-income" style="font-weight:bold;">$0.00</div></div>
+            <div class="bevel-in" style="padding:9px;"><small>THIS MONTH EXPENSE</small><div id="p-month-expense" style="font-weight:bold;">$0.00</div></div>
+          </div>
+          <div id="p-month-summary" style="font-size:12px; margin-top:8px;">Select a month in Reports to view its cash flow.</div>
+        </fieldset>
+      </section>
+
+      <section id="personal-tab-transactions" class="personal-tab-panel" style="display:none;">
+        <fieldset class="bevel-out" style="padding:8px; margin-bottom:10px;">
+          <legend style="font-family:var(--pixel-font); font-size:9px;">[ LOG DAILY TRANSACTION ]</legend>
+          <form id="personal-form" onsubmit="handlePersonalSubmit(event)">
+            <div class="grid-2">
+              <div class="field-group"><label for="p-type">Type:</label><select id="p-type" class="bevel-in"><option value="expense">Expense (-)</option><option value="income">Income (+)</option></select></div>
+              <div class="field-group"><label for="p-amount">Amount ($):</label><input type="number" id="p-amount" min="0.01" step="0.01" class="bevel-in" required placeholder="0.00"></div>
+            </div>
+            <div class="grid-2">
+              <div class="field-group"><label for="p-category">Category:</label><select id="p-category" class="bevel-in"><option value="Food & Dining">Food & Dining</option><option value="Rent & Bills">Rent & Bills</option><option value="Entertainment">Entertainment</option><option value="Shopping">Shopping</option><option value="Salary/Allowance">Salary/Allowance</option><option value="General">General</option></select></div>
+              <div class="field-group"><label for="p-date">Date:</label><input type="date" id="p-date" class="bevel-in" required></div>
+            </div>
+            <div class="field-group"><label for="p-desc">Description / Memo:</label><input type="text" id="p-desc" class="bevel-in" maxlength="120" placeholder="e.g. Lunch, Bus fare, Salary"></div>
+            <button type="submit" class="bevel-button" style="width:100%; justify-content:center; font-family:var(--pixel-font); font-size:9px; margin-top:4px;"><i class="fa-solid fa-plus"></i> ADD PERSONAL RECORD</button>
+          </form>
+        </fieldset>
+        <div style="font-family:var(--pixel-font); font-size:9px; margin-bottom:4px;">[ TRANSACTION HISTORY ]</div>
+        <div class="excel-container" style="margin-bottom:8px;">
+          <table class="excel-table"><thead><tr><th>Date</th><th>Cat</th><th>Desc</th><th>Amt ($)</th><th>Action</th></tr></thead><tbody id="personal-recent-tbody"></tbody></table>
+        </div>
+      </section>
+
+      <section id="personal-tab-budgets" class="personal-tab-panel" style="display:none;">
+        <fieldset class="bevel-out" style="padding:8px; margin-bottom:10px;">
+          <legend style="font-family:var(--pixel-font); font-size:9px;">[ MONTHLY SPENDING BUDGETS ]</legend>
+          <form id="personal-budget-form" onsubmit="handlePersonalBudgetSubmit(event)">
+            <div class="grid-2">
+              <div class="field-group"><label for="p-budget-category">Category:</label><select id="p-budget-category" class="bevel-in"><option>Food & Dining</option><option>Rent & Bills</option><option>Entertainment</option><option>Shopping</option><option>Salary/Allowance</option><option>General</option></select></div>
+              <div class="field-group"><label for="p-budget-limit">Monthly limit ($):</label><input id="p-budget-limit" type="number" min="0.01" step="0.01" class="bevel-in" required></div>
+            </div>
+            <button class="bevel-button" type="submit" style="width:100%; justify-content:center;">SAVE / UPDATE BUDGET</button>
+          </form>
+          <div class="excel-container" style="margin-top:7px;"><table class="excel-table"><thead><tr><th>Category</th><th>Spent</th><th>Limit</th><th>Left</th><th>Action</th></tr></thead><tbody id="personal-budgets-tbody"></tbody></table></div>
+        </fieldset>
+      </section>
+
+      <section id="personal-tab-goals" class="personal-tab-panel" style="display:none;">
+        <fieldset class="bevel-out" style="padding:8px; margin-bottom:10px;">
+          <legend style="font-family:var(--pixel-font); font-size:9px;">[ SAVINGS GOALS ]</legend>
+          <form id="personal-goal-form" onsubmit="handlePersonalGoalSubmit(event)">
+            <div class="field-group"><label for="p-goal-name">Goal name:</label><input id="p-goal-name" class="bevel-in" maxlength="50" required placeholder="e.g. New laptop"></div>
+            <div class="grid-2">
+              <div class="field-group"><label for="p-goal-target">Target ($):</label><input id="p-goal-target" type="number" min="0.01" step="0.01" class="bevel-in" required></div>
+              <div class="field-group"><label for="p-goal-saved">Already saved ($):</label><input id="p-goal-saved" type="number" min="0" step="0.01" value="0" class="bevel-in"></div>
+            </div>
+            <button class="bevel-button" type="submit" style="width:100%; justify-content:center;">CREATE SAVINGS GOAL</button>
+          </form>
+          <div id="personal-goals-list" style="margin-top:7px;"></div>
+        </fieldset>
+      </section>
+
+      <section id="personal-tab-reports" class="personal-tab-panel" style="display:none;">
+        <fieldset class="bevel-out" style="padding:8px; margin-bottom:10px;">
+          <legend style="font-family:var(--pixel-font); font-size:9px;">[ MONTHLY FINANCIAL REPORT ]</legend>
+          <div class="field-group"><label for="p-month-filter">Report month:</label><input type="month" id="p-month-filter" class="bevel-in" onchange="renderPersonalInsights()"></div>
+          <div class="grid-2" style="margin:8px 0;">
+            <div class="bevel-in" style="padding:8px;">TOTAL INCOME<div id="p-report-income" style="font-weight:bold;">$0.00</div></div>
+            <div class="bevel-in" style="padding:8px;">TOTAL EXPENSE<div id="p-report-expense" style="font-weight:bold;">$0.00</div></div>
+          </div>
+          <div id="p-report-summary" style="margin:6px 0; font-size:12px;"></div>
+          <div style="font-family:var(--pixel-font); font-size:9px; margin:8px 0 4px;">[ EXPENSE BY CATEGORY ]</div>
+          <div class="excel-container"><table class="excel-table"><thead><tr><th>Category</th><th>Spent ($)</th><th>Share</th></tr></thead><tbody id="p-report-category-tbody"></tbody></table></div>
+          <button class="bevel-button" onclick="generatePersonalSummaryReport()" style="width:100%; justify-content:center; font-family:var(--pixel-font); font-size:9px; background:#000080; color:white; margin-top:8px;"><i class="fa-solid fa-chart-pie"></i> GENERATE PERSONAL ACCOUNTS REPORT</button>
+        </fieldset>
+      </section>
     </div>
   </div>
 
@@ -687,12 +695,33 @@
       <div style="display: flex; gap: 4px; margin-bottom: 8px;">
         <button class="bevel-button" onclick="switchBusinessTab('journal')" id="btn-tab-journal">JOURNAL</button>
         <button class="bevel-button" onclick="switchBusinessTab('ledger')" id="btn-tab-ledger">LEDGER</button>
+        <button class="bevel-button" onclick="switchBusinessTab('trial')" id="btn-tab-trial">TRIAL BALANCE</button>
         <button class="bevel-button" onclick="switchBusinessTab('final')" id="btn-tab-final">FINANCIALS</button>
       </div>
 
       <div id="biz-tab-journal">
         <fieldset class="bevel-out" style="padding: 6px; margin-bottom: 8px;">
           <legend style="font-family: var(--pixel-font); font-size: 8px;">[ POST JOURNAL ENTRY ]</legend>
+          
+          <!-- AUTO PRESET SELECTOR (NEW FEATURE 1) -->
+          <div class="field-group" style="background:#e8f4fc; padding:4px; border:1px solid #70a0d0;">
+            <label for="b-preset" style="color:#000080; font-size:1.05rem;">⚡ Quick Auto-Journal Preset (Optional):</label>
+            <select id="b-preset" class="bevel-in" onchange="applyJournalPreset(this.value)">
+              <option value="">-- Choose Transaction Template (Auto Fill) --</option>
+              <option value="buy_cash">Buying Goods / Purchases (Cash Expense)</option>
+              <option value="buy_credit">Buying Goods on Credit (Accounts Payable)</option>
+              <option value="sales_cash">Sales Revenue (Received Cash)</option>
+              <option value="sales_credit">Sales Revenue (Due / Accounts Receivable)</option>
+              <option value="interest_rcv">Interest Received (Revenue)</option>
+              <option value="interest_paid">Interest Paid (Expense)</option>
+              <option value="comm_rcv">Commission Received (Revenue)</option>
+              <option value="comm_paid">Commission Paid (Expense)</option>
+              <option value="loan">Bank / Notes Loan Received</option>
+              <option value="rent">Rent Expense Paid</option>
+              <option value="salary">Salaries Expense Paid</option>
+            </select>
+          </div>
+
           <form id="business-form" onsubmit="handleBusinessSubmit(event)">
             <div class="grid-2">
               <div class="field-group">
@@ -700,22 +729,27 @@
                 <input type="date" id="b-date" class="bevel-in" required>
               </div>
               <div class="field-group">
-                <label for="b-title">Account Title:</label>
-                <input type="text" id="b-title" class="bevel-in" placeholder="e.g. Sales, Cash, Inventory" required>
+                <label for="b-amount">Amount ($):</label>
+                <input type="number" id="b-amount" min="0.01" step="0.01" class="bevel-in" placeholder="0.00" required>
               </div>
+            </div>
+            <div class="field-group">
+              <label for="b-description">Transaction Description:</label>
+              <input type="text" id="b-description" class="bevel-in" maxlength="120" placeholder="e.g. Purchased office supplies" required>
             </div>
             <div class="grid-2">
               <div class="field-group">
-                <label for="b-debit">Debit Amount ($):</label>
-                <input type="number" id="b-debit" step="0.01" class="bevel-in" placeholder="0.00">
+                <label for="b-debit-account">Debit Account (+Asset/+Expense):</label>
+                <select id="b-debit-account" class="bevel-in" required></select>
               </div>
               <div class="field-group">
-                <label for="b-credit">Credit Amount ($):</label>
-                <input type="number" id="b-credit" step="0.01" class="bevel-in" placeholder="0.00">
+                <label for="b-credit-account">Credit Account (+Liability/+Revenue):</label>
+                <select id="b-credit-account" class="bevel-in" required></select>
               </div>
             </div>
+            <div id="business-entry-error" role="status" style="color:#a00000; font-weight:bold; min-height:1.2em;"></div>
             <button type="submit" class="bevel-button" style="width: 100%; justify-content: center; font-family: var(--pixel-font); font-size: 8px;">
-              POST JOURNAL RECORD
+              POST BALANCED JOURNAL ENTRY
             </button>
           </form>
         </fieldset>
@@ -737,37 +771,55 @@
       </div>
 
       <div id="biz-tab-ledger" style="display: none;">
-        <div style="font-family: var(--pixel-font); font-size: 9px; margin-bottom: 6px;">[ GENERAL LEDGER SUMMARY ]</div>
+        <div style="font-family: var(--pixel-font); font-size: 9px; margin-bottom: 6px;">[ GENERAL LEDGER ]</div>
+        <div class="field-group">
+          <label for="ledger-account-select">Choose account:</label>
+          <select id="ledger-account-select" class="bevel-in" onchange="renderBusiness()"></select>
+        </div>
         <div class="excel-container">
           <table class="excel-table">
-            <thead>
-              <tr>
-                <th>Account Title</th>
-                <th>Total Debit ($)</th>
-                <th>Total Credit ($)</th>
-                <th>Net Balance ($)</th>
-              </tr>
-            </thead>
+            <thead><tr><th>Date</th><th>Description</th><th>Debit ($)</th><th>Credit ($)</th><th>Balance ($)</th></tr></thead>
             <tbody id="business-ledger-tbody"></tbody>
           </table>
         </div>
+        <div id="business-ledger-total" style="font-weight:bold; margin-top:6px;"></div>
+      </div>
+
+      <div id="biz-tab-trial" style="display:none;">
+        <div style="font-family: var(--pixel-font); font-size: 9px; margin-bottom: 6px;">[ UNADJUSTED TRIAL BALANCE ]</div>
+        <div class="excel-container">
+          <table class="excel-table">
+            <thead><tr><th>Account</th><th>Debit ($)</th><th>Credit ($)</th></tr></thead>
+            <tbody id="business-trial-tbody"></tbody>
+            <tfoot><tr><th>TOTAL</th><th id="trial-total-debit">$0.00</th><th id="trial-total-credit">$0.00</th></tr></tfoot>
+          </table>
+        </div>
+        <div id="trial-status" style="font-weight:bold; margin-top:6px;"></div>
       </div>
 
       <div id="biz-tab-final" style="display: none;">
         <div class="grid-2" style="margin-bottom: 8px;">
           <div class="bevel-out" style="padding: 8px;">
             <div style="font-family: var(--pixel-font); font-size: 8px; color: #000080; margin-bottom: 4px;">INCOME STATEMENT</div>
-            <div>Gross Revenue: <span id="b-rev">$0.00</span></div>
-            <div>Total Expenses: <span id="b-exp">$0.00</span></div>
+            <div>Revenue: <span id="b-rev">$0.00</span></div>
+            <div>Expenses: <span id="b-exp">$0.00</span></div>
             <hr style="border: 0; border-top: 1px solid #888;">
             <div style="font-weight: bold;">Net Profit/Loss: <span id="b-net">$0.00</span></div>
           </div>
           <div class="bevel-out" style="padding: 8px;">
-            <div style="font-family: var(--pixel-font); font-size: 8px; color: #000080; margin-bottom: 4px;">BALANCE SHEET SUMMARY</div>
-            <div>Assets (Net Cash): <span id="b-assets">$0.00</span></div>
-            <div>Liabilities: <span id="b-liab">$0.00</span></div>
-            <div>Equity: <span id="b-equity">$0.00</span></div>
+            <div style="font-family: var(--pixel-font); font-size: 8px; color: #000080; margin-bottom: 4px;">BALANCE SHEET</div>
+            <div>Total Assets: <span id="b-assets">$0.00</span></div>
+            <div>Total Liabilities: <span id="b-liab">$0.00</span></div>
+            <div>Owner's Equity: <span id="b-equity">$0.00</span></div>
+            <div>Liabilities + Equity: <span id="b-liab-equity">$0.00</span></div>
+            <div id="balance-sheet-status" style="font-weight:bold; margin-top:4px;"></div>
           </div>
+        </div>
+        <div class="excel-container">
+          <table class="excel-table">
+            <thead><tr><th>Income Statement Detail</th><th>Amount ($)</th></tr></thead>
+            <tbody id="income-statement-tbody"></tbody>
+          </table>
         </div>
       </div>
 
@@ -806,7 +858,7 @@
   </div>
 
   <!-- WINDOW 4: BUSINESS EXCEL -->
-  <div id="win-excel-business" class="window bevel-out" style="top: 80px; left: 280px; width: 520px;">
+  <div id="win-excel-business" class="window bevel-out" style="top: 80px; left: 280px; width: 540px;">
     <div class="window-header">
       <div class="window-title"><i class="fa-solid fa-table-cells"></i> XP - Business_Accounts.xls</div>
       <div class="window-controls">
@@ -820,10 +872,10 @@
           <thead>
             <tr>
               <th>Date</th>
-              <th>Account Title</th>
-              <th>Debit ($)</th>
-              <th>Credit ($)</th>
-              <th>Net ($)</th>
+              <th>Description</th>
+              <th>Debit Account (Dr)</th>
+              <th>Credit Account (Cr)</th>
+              <th>Amount ($)</th>
             </tr>
           </thead>
           <tbody id="excel-business-tbody"></tbody>
@@ -886,8 +938,12 @@
       </div>
 
       <div class="field-group" style="margin-top: 10px;">
-        <label for="gemini-key">Custom Gemini API Key (Optional):</label>
-        <input type="password" id="gemini-key" class="bevel-in" placeholder="Leave blank to use environment default key">
+        <label for="gemini-key">Custom Gemini API Key:</label>
+        <div style="display: flex; gap: 4px;">
+          <input type="password" id="gemini-key" class="bevel-in" placeholder="Enter Gemini API Key" style="flex-grow: 1;">
+          <button class="bevel-button" onclick="saveApiKey()" style="font-size: 1rem; background: #000080; color: white;">Save Key</button>
+        </div>
+        <div id="key-status-msg" style="font-size: 10px; color: #087b28; margin-top: 2px;"></div>
       </div>
 
       <div class="field-group">
@@ -1025,7 +1081,7 @@
       </div>
     </div>
     <div class="window-body" style="padding: 0; height: calc(100% - 28px); background: #0a0d12; overflow: hidden;">
-      <iframe src="terminal.html" style="width: 100%; height: 100%; border: none;"></iframe>
+      <iframe src="terminal.html" title="XP OS Terminal" sandbox="allow-scripts" referrerpolicy="no-referrer" style="width: 100%; height: 100%; border: none;"></iframe>
     </div>
   </div>
 
@@ -1071,9 +1127,7 @@
   </div>
 
   <script>
-    /* ==========================================================================
-       1. WEB AUDIO SYNTHESIZER (RETRO SOUND EFFECTS)
-       ========================================================================== */
+    /* 1. RETRO SOUND EFFECTS */
     let soundEnabled = true;
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
@@ -1111,20 +1165,17 @@
       if (soundEnabled) soundClick();
     }
 
-    /* ==========================================================================
-       2. GLOBAL STATE & LOCAL STORAGE PERSISTENCE WITH SEEDED MOCK DATA
-       ========================================================================== */
+    /* 2. GLOBAL STATE & PERSISTENCE */
     let state = {
       personal: [
         { id: 101, type: 'income', amount: 3500.00, category: 'Salary/Allowance', date: '2026-11-01', desc: 'Monthly Pay' },
         { id: 102, type: 'expense', amount: 850.00, category: 'Rent & Bills', date: '2026-11-02', desc: 'Apartment Rent' },
         { id: 103, type: 'expense', amount: 120.00, category: 'Food & Dining', date: '2026-11-03', desc: 'Weekly Groceries' }
       ],
-      business: [
-        { id: 201, date: '2026-11-01', title: 'Client Services', debit: 0, credit: 4200.00 },
-        { id: 202, date: '2026-11-02', title: 'Office Supplies', debit: 350.00, credit: 0 },
-        { id: 203, date: '2026-11-04', title: 'Software License', debit: 150.00, credit: 0 }
-      ],
+      business: [],
+      businessEntries: [],
+      personalBudgets: [],
+      personalGoals: [],
       memos: [
         { id: 301, text: 'Review quarterly tax report with accountant.', time: null, triggered: false }
       ]
@@ -1133,17 +1184,58 @@
     function loadState() {
       const p = localStorage.getItem('xp_personal_data');
       const b = localStorage.getItem('xp_business_data');
+      const be = localStorage.getItem('xp_business_entries_v2');
       const m = localStorage.getItem('xp_memos_data');
+      const pb = localStorage.getItem('xp_personal_budgets_v1');
+      const pg = localStorage.getItem('xp_personal_goals_v1');
       if (p) try { state.personal = JSON.parse(p); } catch(e){}
       if (b) try { state.business = JSON.parse(b); } catch(e){}
+      if (be) try {
+        const parsedEntries = JSON.parse(be);
+        state.businessEntries = Array.isArray(parsedEntries) ? parsedEntries.filter(entry =>
+          entry && BUSINESS_ACCOUNTS.some(a => a.name === entry.debitAccount) &&
+          BUSINESS_ACCOUNTS.some(a => a.name === entry.creditAccount) &&
+          entry.debitAccount !== entry.creditAccount &&
+          Number.isFinite(Number(entry.amount)) && Number(entry.amount) > 0 &&
+          typeof entry.date === 'string' && typeof entry.description === 'string'
+        ) : [];
+      } catch(e) { state.businessEntries = []; }
       if (m) try { state.memos = JSON.parse(m); } catch(e){}
+      if (pb) try { state.personalBudgets = JSON.parse(pb); } catch(e) { state.personalBudgets = []; }
+      if (pg) try { state.personalGoals = JSON.parse(pg); } catch(e) { state.personalGoals = []; }
+      
+      const savedApiKey = localStorage.getItem('gemini_custom_api_key');
+      if (savedApiKey) {
+        document.getElementById('gemini-key').value = savedApiKey;
+        document.getElementById('key-status-msg').innerText = '✔ API Key loaded from storage.';
+      }
+
+      populateBusinessAccountSelects();
       renderAll();
+    }
+
+    function saveApiKey() {
+      soundClick();
+      const keyVal = document.getElementById('gemini-key').value.trim();
+      const statusMsg = document.getElementById('key-status-msg');
+      if (keyVal) {
+        localStorage.setItem('gemini_custom_api_key', keyVal);
+        statusMsg.innerText = '✔ API Key saved successfully!';
+        statusMsg.style.color = '#087b28';
+      } else {
+        localStorage.removeItem('gemini_custom_api_key');
+        statusMsg.innerText = '⚠ API Key cleared.';
+        statusMsg.style.color = '#b00020';
+      }
     }
 
     function saveState() {
       localStorage.setItem('xp_personal_data', JSON.stringify(state.personal));
-      localStorage.setItem('xp_business_data', JSON.stringify(state.business));
+      localStorage.setItem('xp_business_data', JSON.stringify(state.business || []));
+      localStorage.setItem('xp_business_entries_v2', JSON.stringify(state.businessEntries || []));
       localStorage.setItem('xp_memos_data', JSON.stringify(state.memos));
+      localStorage.setItem('xp_personal_budgets_v1', JSON.stringify(state.personalBudgets || []));
+      localStorage.setItem('xp_personal_goals_v1', JSON.stringify(state.personalGoals || []));
       renderAll();
     }
 
@@ -1152,16 +1244,20 @@
       if (confirm("Are you sure you want to hard reset XP system state data?")) {
         localStorage.removeItem('xp_personal_data');
         localStorage.removeItem('xp_business_data');
+        localStorage.removeItem('xp_business_entries_v2');
         localStorage.removeItem('xp_memos_data');
-        state = { personal: [], business: [], memos: [] };
+        localStorage.removeItem('xp_personal_budgets_v1');
+        localStorage.removeItem('xp_personal_goals_v1');
+        localStorage.removeItem('gemini_custom_api_key');
+        document.getElementById('gemini-key').value = '';
+        document.getElementById('key-status-msg').innerText = '';
+        state = { personal: [], business: [], businessEntries: [], personalBudgets: [], personalGoals: [], memos: [] };
         renderAll();
         showRetroAlert("XP System state reset successfully!");
       }
     }
 
-    /* ==========================================================================
-       3. DRAGGABLE WINDOWS (TOUCH & MOUSE BOUNDARY LOCKING)
-       ========================================================================== */
+    /* 3. DRAGGABLE WINDOWS */
     let activeZ = 100;
 
     function bringToFront(win) {
@@ -1281,9 +1377,7 @@
       menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
     }
 
-    /* ==========================================================================
-       4. CALCULATOR ENGINE
-       ========================================================================== */
+    /* 4. CALCULATOR ENGINE */
     let calcExpr = '';
     function calcAction(val) {
       soundClick();
@@ -1308,9 +1402,16 @@
       } else { calcExpr += val; display.innerText = calcExpr; }
     }
 
-    /* ==========================================================================
-       5. PERSONAL WALLET ENGINE
-       ========================================================================== */
+    /* 5. PERSONAL WALLET ENGINE */
+    function switchPersonalTab(tab) {
+      soundClick();
+      ['dashboard','transactions','budgets','goals','reports'].forEach(name => {
+        const panel = document.getElementById(`personal-tab-${name}`);
+        if (panel) panel.style.display = tab === name ? 'block' : 'none';
+      });
+      if (tab === 'reports') renderPersonalInsights();
+    }
+
     function handlePersonalSubmit(e) {
       e.preventDefault();
       const type = document.getElementById('p-type').value;
@@ -1331,38 +1432,285 @@
       saveState();
     }
 
-    /* ==========================================================================
-       6. BUSINESS SUITE ENGINE
-       ========================================================================== */
+    function handlePersonalBudgetSubmit(e) {
+      e.preventDefault();
+      const category = document.getElementById('p-budget-category').value;
+      const limit = Number(document.getElementById('p-budget-limit').value);
+      if (!Number.isFinite(limit) || limit <= 0) return showRetroAlert('Enter a valid budget greater than zero.');
+      state.personalBudgets = state.personalBudgets || [];
+      const existing = state.personalBudgets.find(x => x.category === category);
+      if (existing) existing.limit = Math.round(limit * 100) / 100;
+      else state.personalBudgets.push({ id: Date.now(), category, limit: Math.round(limit * 100) / 100 });
+      soundAdd(); saveState(); e.target.reset();
+    }
+
+    function deletePersonalBudget(id) {
+      state.personalBudgets = (state.personalBudgets || []).filter(x => x.id !== id);
+      saveState();
+    }
+
+    function handlePersonalGoalSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('p-goal-name').value.trim();
+      const target = Number(document.getElementById('p-goal-target').value);
+      const saved = Number(document.getElementById('p-goal-saved').value || 0);
+      if (!name || !Number.isFinite(target) || target <= 0 || !Number.isFinite(saved) || saved < 0) return showRetroAlert('Enter valid goal amounts.');
+      state.personalGoals = state.personalGoals || [];
+      state.personalGoals.push({ id: Date.now(), name, target: Math.round(target*100)/100, saved: Math.round(saved*100)/100 });
+      soundAdd(); saveState(); e.target.reset(); document.getElementById('p-goal-saved').value = '0';
+    }
+
+    function updatePersonalGoal(id) {
+      const goal = (state.personalGoals || []).find(x => x.id === id);
+      if (!goal) return;
+      const raw = prompt(`Add savings to ${goal.name}:`, '0');
+      if (raw === null) return;
+      const amount = Number(raw);
+      if (!Number.isFinite(amount) || amount <= 0) return showRetroAlert('Enter a positive amount.');
+      goal.saved = Math.round((Number(goal.saved) + amount) * 100) / 100;
+      saveState();
+    }
+
+    function deletePersonalGoal(id) {
+      state.personalGoals = (state.personalGoals || []).filter(x => x.id !== id);
+      saveState();
+    }
+
+    function renderPersonalInsights() {
+      const monthInput = document.getElementById('p-month-filter');
+      if (!monthInput) return;
+      const month = monthInput.value || new Date().toISOString().slice(0,7);
+      const records = state.personal.filter(x => String(x.date || '').slice(0,7) === month);
+      const income = records.filter(x => x.type === 'income').reduce((a,x) => a + Number(x.amount || 0), 0);
+      const expense = records.filter(x => x.type === 'expense').reduce((a,x) => a + Number(x.amount || 0), 0);
+      const net = income - expense;
+      const rate = income > 0 ? (net / income) * 100 : 0;
+      document.getElementById('p-month-income').textContent = money(income);
+      document.getElementById('p-month-expense').textContent = money(expense);
+      const netEl = document.getElementById('p-net-flow'); netEl.textContent = money(net); netEl.style.color = net < 0 ? '#b00020' : '#087b28';
+      document.getElementById('p-savings-rate').textContent = `${rate.toFixed(1)}%`;
+      document.getElementById('p-month-summary').textContent = `${month}: ${records.length} transaction(s) · ${net >= 0 ? 'Surplus' : 'Deficit'} ${money(Math.abs(net))}`;
+
+      const reportIncome = document.getElementById('p-report-income');
+      const reportExpense = document.getElementById('p-report-expense');
+      const reportSummary = document.getElementById('p-report-summary');
+      if (reportIncome) reportIncome.textContent = money(income);
+      if (reportExpense) reportExpense.textContent = money(expense);
+      if (reportSummary) reportSummary.textContent = `${month} · ${records.length} transaction(s) · ${net >= 0 ? 'Surplus' : 'Deficit'} ${money(Math.abs(net))} · Savings rate ${rate.toFixed(1)}%`;
+      const categoryBody = document.getElementById('p-report-category-tbody');
+      if (categoryBody) {
+        categoryBody.replaceChildren();
+        const totals = {};
+        records.filter(x => x.type === 'expense').forEach(x => { totals[x.category || 'General'] = (totals[x.category || 'General'] || 0) + Number(x.amount || 0); });
+        Object.entries(totals).sort((a,b) => b[1]-a[1]).forEach(([category, total]) => {
+          const tr = document.createElement('tr');
+          [category, money(total), `${expense > 0 ? (total / expense * 100).toFixed(1) : '0.0'}%`].forEach(value => { const td=document.createElement('td'); td.textContent=value; tr.appendChild(td); });
+          categoryBody.appendChild(tr);
+        });
+        if (!Object.keys(totals).length) { const tr=document.createElement('tr'); const td=document.createElement('td'); td.colSpan=3; td.textContent='No expenses recorded for this month.'; tr.appendChild(td); categoryBody.appendChild(tr); }
+      }
+
+      const budgetBody = document.getElementById('personal-budgets-tbody');
+      budgetBody.replaceChildren();
+      (state.personalBudgets || []).forEach(b => {
+        const spent = records.filter(x => x.type === 'expense' && x.category === b.category).reduce((a,x) => a + Number(x.amount || 0), 0);
+        const left = Number(b.limit) - spent;
+        const tr = document.createElement('tr');
+        [b.category, money(spent), money(b.limit), `${left < 0 ? '-' : ''}${money(Math.abs(left))}`].forEach(v => { const td=document.createElement('td'); td.textContent=v; tr.appendChild(td); });
+        const action=document.createElement('td'); const btn=document.createElement('button'); btn.className='bevel-button win-btn'; btn.textContent='X'; btn.onclick=()=>deletePersonalBudget(b.id); action.appendChild(btn); tr.appendChild(action); budgetBody.appendChild(tr);
+        if (spent > Number(b.limit)) tr.style.color = '#b00020';
+      });
+      const goals = document.getElementById('personal-goals-list'); goals.replaceChildren();
+      (state.personalGoals || []).forEach(g => {
+        const wrap=document.createElement('div'); wrap.className='bevel-in'; wrap.style.cssText='padding:7px; margin-bottom:6px;';
+        const pct=Math.min(100, Math.max(0, Number(g.saved)/Number(g.target)*100));
+        const title=document.createElement('div'); title.style.fontWeight='bold'; title.textContent=`${g.name} — ${money(g.saved)} / ${money(g.target)} (${pct.toFixed(1)}%)`; wrap.appendChild(title);
+        const bar=document.createElement('div'); bar.style.cssText='height:9px; background:#ddd; border:1px solid #777; margin:5px 0;';
+        const fill=document.createElement('div'); fill.style.cssText=`height:100%; width:${pct}%; background:#159447;`; bar.appendChild(fill); wrap.appendChild(bar);
+        const add=document.createElement('button'); add.className='bevel-button'; add.textContent='ADD SAVINGS'; add.onclick=()=>updatePersonalGoal(g.id); wrap.appendChild(add);
+        const del=document.createElement('button'); del.className='bevel-button'; del.style.marginLeft='5px'; del.textContent='DELETE'; del.onclick=()=>deletePersonalGoal(g.id); wrap.appendChild(del);
+        goals.appendChild(wrap);
+      });
+    }
+
+    /* 6. BUSINESS SUITE ENGINE (UPDATED WITH NEW ACCOUNTS & PRESETS) */
     function switchBusinessTab(tab) {
       soundClick();
-      document.getElementById('biz-tab-journal').style.display = tab === 'journal' ? 'block' : 'none';
-      document.getElementById('biz-tab-ledger').style.display = tab === 'ledger' ? 'block' : 'none';
-      document.getElementById('biz-tab-final').style.display = tab === 'final' ? 'block' : 'none';
+      ['journal','ledger','trial','final'].forEach(name => {
+        const panel = document.getElementById(`biz-tab-${name}`);
+        if (panel) panel.style.display = tab === name ? 'block' : 'none';
+      });
+      if (tab === 'ledger') renderBusinessLedger();
+    }
+
+    /* Expanded Account List (Added Buying/Purchases, Commission, Interest) */
+    const BUSINESS_ACCOUNTS = [
+      { name:'Cash', type:'Asset', normal:'debit' },
+      { name:'Accounts Receivable', type:'Asset', normal:'debit' },
+      { name:'Inventory', type:'Asset', normal:'debit' },
+      { name:'Supplies', type:'Asset', normal:'debit' },
+      { name:'Equipment', type:'Asset', normal:'debit' },
+      { name:'Accounts Payable', type:'Liability', normal:'credit' },
+      { name:'Notes Payable', type:'Liability', normal:'credit' },
+      { name:'Owner Capital', type:'Equity', normal:'credit' },
+      { name:'Owner Drawings', type:'Equity', normal:'debit' },
+      { name:'Sales Revenue', type:'Revenue', normal:'credit' },
+      { name:'Service Revenue', type:'Revenue', normal:'credit' },
+      { name:'Interest Income', type:'Revenue', normal:'credit' },
+      { name:'Commission Income', type:'Revenue', normal:'credit' },
+      { name:'Other Revenue', type:'Revenue', normal:'credit' },
+      { name:'Purchase / Buying', type:'Expense', normal:'debit' },
+      { name:'Rent Expense', type:'Expense', normal:'debit' },
+      { name:'Salaries Expense', type:'Expense', normal:'debit' },
+      { name:'Utilities Expense', type:'Expense', normal:'debit' },
+      { name:'Supplies Expense', type:'Expense', normal:'debit' },
+      { name:'Advertising Expense', type:'Expense', normal:'debit' },
+      { name:'Interest Expense', type:'Expense', normal:'debit' },
+      { name:'Commission Expense', type:'Expense', normal:'debit' },
+      { name:'Depreciation Expense', type:'Expense', normal:'debit' },
+      { name:'Other Expense', type:'Expense', normal:'debit' }
+    ];
+
+    /* Automatic Journal Presets Handler */
+    function applyJournalPreset(key) {
+      soundClick();
+      if (!key) return;
+      const dr = document.getElementById('b-debit-account');
+      const cr = document.getElementById('b-credit-account');
+      const desc = document.getElementById('b-description');
+
+      switch(key) {
+        case 'buy_cash':
+          dr.value = 'Purchase / Buying';
+          cr.value = 'Cash';
+          desc.value = 'Purchased goods for cash';
+          break;
+        case 'buy_credit':
+          dr.value = 'Purchase / Buying';
+          cr.value = 'Accounts Payable';
+          desc.value = 'Purchased goods on credit';
+          break;
+        case 'sales_cash':
+          dr.value = 'Cash';
+          cr.value = 'Sales Revenue';
+          desc.value = 'Sales revenue received in cash';
+          break;
+        case 'sales_credit':
+          dr.value = 'Accounts Receivable';
+          cr.value = 'Sales Revenue';
+          desc.value = 'Sales revenue on credit';
+          break;
+        case 'interest_rcv':
+          dr.value = 'Cash';
+          cr.value = 'Interest Income';
+          desc.value = 'Interest income received';
+          break;
+        case 'interest_paid':
+          dr.value = 'Interest Expense';
+          cr.value = 'Cash';
+          desc.value = 'Interest expense paid';
+          break;
+        case 'comm_rcv':
+          dr.value = 'Cash';
+          cr.value = 'Commission Income';
+          desc.value = 'Commission income received';
+          break;
+        case 'comm_paid':
+          dr.value = 'Commission Expense';
+          cr.value = 'Cash';
+          desc.value = 'Commission expense paid';
+          break;
+        case 'loan':
+          dr.value = 'Cash';
+          cr.value = 'Notes Payable';
+          desc.value = 'Bank loan received';
+          break;
+        case 'rent':
+          dr.value = 'Rent Expense';
+          cr.value = 'Cash';
+          desc.value = 'Monthly rent paid';
+          break;
+        case 'salary':
+          dr.value = 'Salaries Expense';
+          cr.value = 'Cash';
+          desc.value = 'Staff salaries paid';
+          break;
+      }
+    }
+
+    function populateBusinessAccountSelects() {
+      ['b-debit-account','b-credit-account','ledger-account-select'].forEach(id => {
+        const select = document.getElementById(id);
+        if (!select) return;
+        const previous = select.value;
+        select.innerHTML = '';
+        BUSINESS_ACCOUNTS.forEach(account => {
+          const option = document.createElement('option');
+          option.value = account.name;
+          option.textContent = `${account.name} (${account.type})`;
+          select.appendChild(option);
+        });
+        if (previous && BUSINESS_ACCOUNTS.some(a => a.name === previous)) select.value = previous;
+      });
+    }
+
+    function money(value) {
+      return '$' + (Number(value) || 0).toFixed(2);
+    }
+
+    function getBusinessAccountMap() {
+      const map = {};
+      BUSINESS_ACCOUNTS.forEach(a => map[a.name] = { ...a, debit:0, credit:0, lines:[] });
+      (state.businessEntries || []).forEach(entry => {
+        if (!map[entry.debitAccount] || !map[entry.creditAccount]) return;
+        map[entry.debitAccount].debit += entry.amount;
+        map[entry.creditAccount].credit += entry.amount;
+        map[entry.debitAccount].lines.push({ ...entry, side:'debit' });
+        map[entry.creditAccount].lines.push({ ...entry, side:'credit' });
+      });
+      Object.values(map).forEach(a => {
+        a.balance = a.normal === 'debit' ? a.debit - a.credit : a.credit - a.debit;
+      });
+      return map;
     }
 
     function handleBusinessSubmit(e) {
       e.preventDefault();
       const date = document.getElementById('b-date').value;
-      const title = document.getElementById('b-title').value;
-      const debit = parseFloat(document.getElementById('b-debit').value) || 0;
-      const credit = parseFloat(document.getElementById('b-credit').value) || 0;
-      if (debit === 0 && credit === 0) return;
-      state.business.unshift({ id: Date.now(), date, title, debit, credit });
-      soundAdd(); saveState();
+      const description = document.getElementById('b-description').value.trim();
+      const amount = Math.round(Number(document.getElementById('b-amount').value) * 100) / 100;
+      const debitAccount = document.getElementById('b-debit-account').value;
+      const creditAccount = document.getElementById('b-credit-account').value;
+      const error = document.getElementById('business-entry-error');
+      if (!date || !description || !Number.isFinite(amount) || amount <= 0) {
+        error.textContent = 'Enter a valid date, description and amount greater than zero.';
+        return;
+      }
+      if (!debitAccount || !creditAccount || debitAccount === creditAccount) {
+        error.textContent = 'Debit and Credit must be two different accounts.';
+        return;
+      }
+      state.businessEntries = state.businessEntries || [];
+      state.businessEntries.unshift({
+        id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)),
+        date, description, debitAccount, creditAccount, amount
+      });
+      error.textContent = '';
+      soundAdd();
+      saveState();
       document.getElementById('business-form').reset();
+      document.getElementById('b-preset').value = '';
       document.getElementById('b-date').valueAsDate = new Date();
     }
 
-    function deleteBusiness(id) {
+    function deleteBusinessEntry(id) {
+      if (!confirm('Delete this complete double-entry transaction? Both sides will be removed.')) return;
+      state.businessEntries = (state.businessEntries || []).filter(entry => entry.id !== id);
       soundClick();
-      state.business = state.business.filter(x => x.id !== id);
       saveState();
     }
 
-    /* ==========================================================================
-       7. MEMOS ENGINE
-       ========================================================================== */
+    /* 7. MEMOS ENGINE */
     function handleAddMemo(e) {
       e.preventDefault();
       const text = document.getElementById('memo-text').value;
@@ -1378,9 +1726,7 @@
       saveState();
     }
 
-    /* ==========================================================================
-       8. RETRO BROWSER & WIKIPEDIA ENGINE
-       ========================================================================== */
+    /* 8. RETRO BROWSER & WIKIPEDIA ENGINE */
     function hideAllBrowserViews() {
       document.getElementById('google-home-page').style.display = 'none';
       document.getElementById('google-results-page').style.display = 'none';
@@ -1439,13 +1785,22 @@
       document.getElementById('search-query-title').innerText = `Search Results for: "${query}"`;
       const encodedQuery = encodeURIComponent(query);
       const wikiTarget = `https://en.m.wikipedia.org/wiki/${encodedQuery}`;
-      document.getElementById('search-results-list').innerHTML = `
-        <div>
-          <a href="#" onclick="loadLiveUrl('${wikiTarget}')" style="color: blue; text-decoration: underline; font-size: 1.15rem; font-weight: bold;">🌐 Wikipedia: ${query}</a>
-          <div style="font-size: 0.95rem; color: green;">https://en.wikipedia.org/wiki/${query}</div>
-          <div style="font-size: 0.95rem; color: #333;">Read article for ${query} directly inside XP Explorer.</div>
-        </div>
-      `;
+      const resultsList = document.getElementById('search-results-list');
+      resultsList.replaceChildren();
+      const result = document.createElement('div');
+      const link = document.createElement('a');
+      link.href = '#';
+      link.textContent = `🌐 Wikipedia: ${query}`;
+      link.style.cssText = 'color: blue; text-decoration: underline; font-size: 1.15rem; font-weight: bold;';
+      link.addEventListener('click', event => { event.preventDefault(); loadLiveUrl(wikiTarget); });
+      const address = document.createElement('div');
+      address.style.cssText = 'font-size: 0.95rem; color: green;';
+      address.textContent = `https://en.wikipedia.org/wiki/${query}`;
+      const description = document.createElement('div');
+      description.style.cssText = 'font-size: 0.95rem; color: #333;';
+      description.textContent = `Read article for ${query} directly inside XP Explorer.`;
+      result.append(link, address, description);
+      resultsList.appendChild(result);
     }
 
     function handleFeelingLucky() { soundClick(); loadLiveUrl('https://en.m.wikipedia.org/wiki/Main_Page'); }
@@ -1466,9 +1821,13 @@
       }
     }
 
-    /* ==========================================================================
-       9. RENDERING UTILITIES
-       ========================================================================== */
+    function escapeHTML(value) {
+      return String(value ?? '').replace(/[&<>"']/g, ch => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[ch]));
+    }
+
+    /* 9. RENDERING UTILITIES (COLOR CODING INTEGRATED IN EXCEL) */
     function renderAll() {
       renderPersonal();
       renderBusiness();
@@ -1485,7 +1844,8 @@
         if (item.type === 'income') income += item.amount;
         if (item.type === 'expense') expense += item.amount;
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${item.date}</td><td>${item.category}</td><td>${item.desc}</td><td style="color:${item.type==='income'?'green':'red'}; font-weight:bold;">${item.type==='income'?'+':'-'}$${item.amount.toFixed(2)}</td><td><button class="bevel-button win-btn" onclick="deletePersonal(${item.id})">X</button></td>`;
+        const colorClass = item.type === 'income' ? 'figure-green' : 'figure-red';
+        tr.innerHTML = `<td>${escapeHTML(item.date)}</td><td>${escapeHTML(item.category)}</td><td>${escapeHTML(item.desc)}</td><td class="${colorClass}">${item.type==='income'?'+':'-'}$${item.amount.toFixed(2)}</td><td><button class="bevel-button win-btn" onclick="deletePersonal(${item.id})">X</button></td>`;
         tbody.appendChild(tr);
       });
       const cash = income - expense;
@@ -1496,81 +1856,170 @@
       document.getElementById('mp-bar-text').innerText = `$${income.toFixed(2)}`;
       document.getElementById('exp-bar-fill').style.width = expPercent + '%';
       document.getElementById('exp-bar-text').innerText = `BURNT: ${expPercent}% ($${expense.toFixed(2)})`;
+      const monthFilter = document.getElementById('p-month-filter');
+      if (monthFilter && !monthFilter.value) monthFilter.value = new Date().toISOString().slice(0,7);
+      renderPersonalInsights();
     }
 
     function renderBusiness() {
-      const jBody = document.getElementById('business-journal-tbody');
-      jBody.innerHTML = '';
-      const ledger = {};
-      let totalRev = 0, totalExp = 0;
-      state.business.forEach(b => {
-        const netRow = b.credit - b.debit;
-        const colorStyle = netRow >= 0 ? 'color:#008000; font-weight:bold;' : 'color:#cc0000; font-weight:bold;';
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${b.date}</td><td>${b.title}</td><td>${b.debit > 0 ? '$' + b.debit.toFixed(2) : '-'}</td><td>${b.credit > 0 ? '$' + b.credit.toFixed(2) : '-'}</td><td><button class="bevel-button win-btn" onclick="deleteBusiness(${b.id})">X</button></td>`;
-        jBody.appendChild(tr);
-        if (!ledger[b.title]) ledger[b.title] = { debit: 0, credit: 0 };
-        ledger[b.title].debit += b.debit;
-        ledger[b.title].credit += b.credit;
-        totalRev += b.credit;
-        totalExp += b.debit;
-      });
-      const netProfit = totalRev - totalExp;
-      const bizExpPercent = totalRev > 0 ? Math.min(100, Math.round((totalExp / totalRev) * 100)) : (totalExp > 0 ? 100 : 0);
-      const bizHpPercent = totalRev > 0 ? Math.max(0, Math.min(100, Math.round((netProfit / totalRev) * 100))) : 0;
-      document.getElementById('biz-hp-fill').style.width = bizHpPercent + '%';
-      document.getElementById('biz-hp-text').innerText = `$${netProfit.toFixed(2)} / $${totalRev.toFixed(2)}`;
-      document.getElementById('biz-mp-fill').style.width = '100%';
-      document.getElementById('biz-mp-text').innerText = `$${totalRev.toFixed(2)}`;
-      document.getElementById('biz-exp-fill').style.width = bizExpPercent + '%';
-      document.getElementById('biz-exp-text').innerText = `LOAD: ${bizExpPercent}% ($${totalExp.toFixed(2)})`;
+      const entries = state.businessEntries || [];
+      const journalBody = document.getElementById('business-journal-tbody');
+      if (journalBody) {
+        journalBody.innerHTML = '';
+        entries.forEach(entry => {
+          const tr = document.createElement('tr');
+          [entry.date, entry.description, `${entry.debitAccount}  ${money(entry.amount)}`, `${entry.creditAccount}  ${money(entry.amount)}`].forEach(value => {
+            const td = document.createElement('td'); td.textContent = value; tr.appendChild(td);
+          });
+          const action = document.createElement('td');
+          const btn = document.createElement('button');
+          btn.className = 'bevel-button win-btn'; btn.type = 'button'; btn.textContent = 'X';
+          btn.addEventListener('click', () => deleteBusinessEntry(entry.id));
+          action.appendChild(btn); tr.appendChild(action); journalBody.appendChild(tr);
+        });
+      }
 
-      const lBody = document.getElementById('business-ledger-tbody');
-      lBody.innerHTML = '';
-      Object.keys(ledger).forEach(title => {
-        const d = ledger[title].debit;
-        const c = ledger[title].credit;
-        const net = c - d;
-        const netColor = net >= 0 ? '#008000' : '#cc0000';
+      const map = getBusinessAccountMap();
+      const trialBody = document.getElementById('business-trial-tbody');
+      let totalDebit = 0, totalCredit = 0;
+      if (trialBody) {
+        trialBody.innerHTML = '';
+        BUSINESS_ACCOUNTS.forEach(account => {
+          const a = map[account.name];
+          if (Math.abs(a.balance) < 0.005) return;
+          const dr = a.balance > 0 && a.normal === 'debit' ? a.balance : (a.balance < 0 && a.normal === 'credit' ? -a.balance : 0);
+          const cr = a.balance > 0 && a.normal === 'credit' ? a.balance : (a.balance < 0 && a.normal === 'debit' ? -a.balance : 0);
+          if (!dr && !cr) return;
+          totalDebit += dr; totalCredit += cr;
+          const tr = document.createElement('tr');
+          const name = document.createElement('td'); name.textContent = account.name;
+          const debit = document.createElement('td'); debit.textContent = dr ? money(dr) : '-'; debit.className = dr ? 'figure-red' : '';
+          const credit = document.createElement('td'); credit.textContent = cr ? money(cr) : '-'; credit.className = cr ? 'figure-green' : '';
+          tr.append(name,debit,credit); trialBody.appendChild(tr);
+        });
+      }
+      document.getElementById('trial-total-debit').textContent = money(totalDebit);
+      document.getElementById('trial-total-credit').textContent = money(totalCredit);
+      const balanced = Math.abs(totalDebit-totalCredit) < 0.005;
+      const trialStatus = document.getElementById('trial-status');
+      trialStatus.textContent = balanced ? '✓ Trial balance agrees.' : '⚠ Trial balance is out of balance.';
+      trialStatus.style.color = balanced ? '#08752b' : '#a00000';
+
+      const totals = calculateBusinessStatements(map);
+      document.getElementById('biz-hp-fill').style.width = (totals.revenue > 0 ? Math.max(0,Math.min(100,totals.netIncome/totals.revenue*100)) : 0) + '%';
+      document.getElementById('biz-hp-text').textContent = `${money(totals.netIncome)} NET`;
+      document.getElementById('biz-mp-fill').style.width = '100%';
+      document.getElementById('biz-mp-text').textContent = money(totals.revenue);
+      document.getElementById('biz-exp-fill').style.width = (totals.revenue > 0 ? Math.min(100,totals.expenses/totals.revenue*100) : (totals.expenses ? 100 : 0)) + '%';
+      document.getElementById('biz-exp-text').textContent = `EXPENSES: ${money(totals.expenses)}`;
+
+      document.getElementById('b-rev').textContent = money(totals.revenue);
+      document.getElementById('b-exp').textContent = money(totals.expenses);
+      document.getElementById('b-net').textContent = money(totals.netIncome);
+      document.getElementById('b-assets').textContent = money(totals.assets);
+      document.getElementById('b-liab').textContent = money(totals.liabilities);
+      document.getElementById('b-equity').textContent = money(totals.equity);
+      document.getElementById('b-liab-equity').textContent = money(totals.liabilities + totals.equity);
+      const bsOK = Math.abs(totals.assets - totals.liabilities - totals.equity) < 0.005;
+      const bsStatus = document.getElementById('balance-sheet-status');
+      bsStatus.textContent = bsOK ? '✓ Assets = Liabilities + Equity' : '⚠ Balance sheet does not balance';
+      bsStatus.style.color = bsOK ? '#08752b' : '#a00000';
+
+      const incomeBody = document.getElementById('income-statement-tbody');
+      incomeBody.innerHTML = '';
+      BUSINESS_ACCOUNTS.filter(a => a.type === 'Revenue' || a.type === 'Expense').forEach(a => {
+        const value = map[a.name].balance;
+        if (!value) return;
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${title}</td><td>$${d.toFixed(2)}</td><td>$${c.toFixed(2)}</td><td style="font-weight:bold; color:${netColor};">$${net.toFixed(2)}</td>`;
-        lBody.appendChild(tr);
+        const td1 = document.createElement('td'); td1.textContent = a.name;
+        const td2 = document.createElement('td'); td2.textContent = money(value);
+        td2.className = a.type === 'Revenue' ? 'figure-green' : 'figure-red';
+        tr.append(td1,td2); incomeBody.appendChild(tr);
       });
-      document.getElementById('b-rev').innerText = `$${totalRev.toFixed(2)}`;
-      document.getElementById('b-exp').innerText = `$${totalExp.toFixed(2)}`;
-      document.getElementById('b-net').innerText = `$${netProfit.toFixed(2)}`;
-      document.getElementById('b-net').style.color = netProfit >= 0 ? '#008000' : '#cc0000';
-      document.getElementById('b-assets').innerText = `$${netProfit.toFixed(2)}`;
-      document.getElementById('b-equity').innerText = `$${netProfit.toFixed(2)}`;
+      renderBusinessLedger();
+    }
+
+    function calculateBusinessStatements(map = getBusinessAccountMap()) {
+      let assets=0, liabilities=0, capital=0, drawings=0, revenue=0, expenses=0;
+      BUSINESS_ACCOUNTS.forEach(a => {
+        const balance = map[a.name].balance;
+        if (a.type === 'Asset') assets += balance;
+        if (a.type === 'Liability') liabilities += balance;
+        if (a.name === 'Owner Capital') capital += balance;
+        if (a.name === 'Owner Drawings') drawings += balance;
+        if (a.type === 'Revenue') revenue += balance;
+        if (a.type === 'Expense') expenses += balance;
+      });
+      const netIncome = revenue - expenses;
+      const equity = capital - drawings + netIncome;
+      return { assets, liabilities, capital, drawings, revenue, expenses, netIncome, equity };
+    }
+
+    function renderBusinessLedger() {
+      const body = document.getElementById('business-ledger-tbody');
+      if (!body) return;
+      body.innerHTML = '';
+      const selected = document.getElementById('ledger-account-select')?.value || 'Cash';
+      const account = getBusinessAccountMap()[selected];
+      let running = 0;
+      const rows = [];
+      (state.businessEntries || []).slice().sort((a,b) => a.date.localeCompare(b.date)).forEach(entry => {
+        if (entry.debitAccount === selected) rows.push({entry, debit:entry.amount, credit:0});
+        if (entry.creditAccount === selected) rows.push({entry, debit:0, credit:entry.amount});
+      });
+      rows.forEach(row => {
+        running += account.normal === 'debit' ? row.debit-row.credit : row.credit-row.debit;
+        const tr = document.createElement('tr');
+        [row.entry.date,row.entry.description,row.debit?money(row.debit):'-',row.credit?money(row.credit):'-',money(running)].forEach((value, idx) => {
+          const td=document.createElement('td'); td.textContent=value;
+          if (idx === 2 && row.debit) td.className = 'figure-red';
+          if (idx === 3 && row.credit) td.className = 'figure-green';
+          tr.appendChild(td);
+        });
+        body.appendChild(tr);
+      });
+      document.getElementById('business-ledger-total').textContent = `${selected} closing balance (${account.normal.toUpperCase()}): ${money(account.balance)}`;
     }
 
     function generatePersonalSummaryReport() {
       soundClick();
-      let inc = 0, exp = 0;
-      state.personal.forEach(p => { if (p.type === 'income') inc += p.amount; if (p.type === 'expense') exp += p.amount; });
-      showRetroAlert(`[ PERSONAL REPORT ]\nNet Cash Balance: $${(inc - exp).toFixed(2)}`);
+      const month = document.getElementById('p-month-filter')?.value || new Date().toISOString().slice(0,7);
+      const records = state.personal.filter(p => String(p.date || '').slice(0,7) === month);
+      const inc = records.filter(p => p.type === 'income').reduce((a,p) => a + Number(p.amount || 0), 0);
+      const exp = records.filter(p => p.type === 'expense').reduce((a,p) => a + Number(p.amount || 0), 0);
+      const categories = {};
+      records.filter(p => p.type === 'expense').forEach(p => categories[p.category] = (categories[p.category] || 0) + Number(p.amount || 0));
+      const top = Object.entries(categories).sort((a,b) => b[1]-a[1]).slice(0,3).map(([k,v]) => `${k}: ${money(v)}`).join('\n') || 'No expenses';
+      showRetroAlert(`[ PERSONAL MONTHLY REPORT: ${month} ]\nIncome: ${money(inc)}\nExpenses: ${money(exp)}\nNet Cash Flow: ${money(inc-exp)}\nSavings Rate: ${inc > 0 ? ((inc-exp)/inc*100).toFixed(1) : '0.0'}%\nTOP EXPENSES\n${top}`);
     }
 
     function generateBusinessFinalAccountsReport() {
       soundClick();
-      let dr = 0, cr = 0;
-      state.business.forEach(b => { dr += b.debit; cr += b.credit; });
-      showRetroAlert(`[ BUSINESS STATEMENTS ]\nNet Profit / (Loss): $${(cr - dr).toFixed(2)}`);
+      const t = calculateBusinessStatements();
+      const balanced = Math.abs(t.assets - t.liabilities - t.equity) < 0.005;
+      showRetroAlert(`[ BUSINESS FINANCIAL STATEMENTS ]\nRevenue: ${money(t.revenue)}\nExpenses: ${money(t.expenses)}\nNet Income: ${money(t.netIncome)}\nAssets: ${money(t.assets)}\nLiabilities: ${money(t.liabilities)}\nEquity: ${money(t.equity)}\nBalance Sheet: ${balanced ? 'BALANCED' : 'CHECK REQUIRED'}`);
     }
 
+    /* Excel Spreadsheets rendering with Red (-) & Green (+) colors */
     function renderExcelSheets() {
       const pExcel = document.getElementById('excel-personal-tbody');
       pExcel.innerHTML = '';
       state.personal.forEach(p => {
-        const color = p.type === 'income' ? '#008000' : '#cc0000';
-        pExcel.innerHTML += `<tr><td>#${p.id.toString().slice(-4)}</td><td>${p.date}</td><td>${p.type}</td><td>${p.category}</td><td>${p.desc}</td><td style="color:${color}; font-weight:bold;">$${p.amount.toFixed(2)}</td></tr>`;
+        const colorClass = p.type === 'income' ? 'figure-green' : 'figure-red';
+        pExcel.innerHTML += `<tr><td>#${p.id.toString().slice(-4)}</td><td>${escapeHTML(p.date)}</td><td>${escapeHTML(p.type)}</td><td>${escapeHTML(p.category)}</td><td>${escapeHTML(p.desc)}</td><td class="${colorClass}">${p.type==='income'?'+':'-'}$${p.amount.toFixed(2)}</td></tr>`;
       });
+
       const bExcel = document.getElementById('excel-business-tbody');
       bExcel.innerHTML = '';
-      state.business.forEach(b => {
-        const net = b.credit - b.debit;
-        const color = net >= 0 ? '#008000' : '#cc0000';
-        bExcel.innerHTML += `<tr><td>${b.date}</td><td>${b.title}</td><td>$${b.debit.toFixed(2)}</td><td>$${b.credit.toFixed(2)}</td><td style="font-weight:bold; color:${color};">$${net.toFixed(2)}</td></tr>`;
+      (state.businessEntries || []).forEach(entry => {
+        const tr = document.createElement('tr');
+        
+        // Color coding rule for Business Excel: Revenue/Income related accounts shown green, expense/debit shown red
+        const isRevenueRelated = entry.creditAccount.includes('Revenue') || entry.creditAccount.includes('Income');
+        const colorClass = isRevenueRelated ? 'figure-green' : 'figure-red';
+
+        tr.innerHTML = `<td>${escapeHTML(entry.date)}</td><td>${escapeHTML(entry.description)}</td><td class="figure-red">${escapeHTML(entry.debitAccount)} (Dr)</td><td class="figure-green">${escapeHTML(entry.creditAccount)} (Cr)</td><td class="${colorClass}">$${entry.amount.toFixed(2)}</td>`;
+        bExcel.appendChild(tr);
       });
     }
     
@@ -1580,18 +2029,26 @@
       state.memos.forEach(m => {
         const tr = document.createElement('tr');
         const formattedTime = m.time ? new Date(m.time).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) : '📝 Quick Note';
-        tr.innerHTML = `<td>${formattedTime}</td><td>${m.text}</td><td><button class="bevel-button win-btn" onclick="deleteMemo(${m.id})">X</button></td>`;
+        const timeCell = document.createElement('td');
+        timeCell.textContent = formattedTime;
+        const textCell = document.createElement('td');
+        textCell.textContent = String(m.text ?? '');
+        const actionCell = document.createElement('td');
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'bevel-button win-btn';
+        deleteButton.textContent = 'X';
+        deleteButton.addEventListener('click', () => deleteMemo(m.id));
+        actionCell.appendChild(deleteButton);
+        tr.append(timeCell, textCell, actionCell);
         tbody.appendChild(tr);
       });
     }
 
-    /* ==========================================================================
-       10. GEMINI API INTEGRATION ENGINE (FETCH WITH BACKOFF & LOCAL ORACLE FALLBACK)
-       ========================================================================== */
+    /* 10. GEMINI API INTEGRATION ENGINE */
     async function callGeminiAPI(promptText) {
-      // 1. Check user key input first, then fallback to environment runtime key
       const userKey = document.getElementById('gemini-key').value.trim();
-      const apiKey = userKey || "";
+      const savedKey = localStorage.getItem('gemini_custom_api_key') || '';
+      const apiKey = userKey || savedKey;
       
       const systemInstruction = "Act as a retro XP OS AI Financial Advisor. Provide actionable, concise, and structured financial insights based on the provided personal and business ledger totals.";
       const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
@@ -1617,9 +2074,7 @@
             const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
             if (text) return { text, isLive: true };
           }
-        } catch (err) {
-          // Retry with exponential backoff silently
-        }
+        } catch (err) {}
         attempts++;
         await new Promise(r => setTimeout(r, delay));
         delay *= 2;
@@ -1632,9 +2087,10 @@
       state.personal.forEach(p => { if (p.type === 'income') wInc += p.amount; if (p.type === 'expense') wExp += p.amount; });
       let wNet = wInc - wExp;
 
-      let bDr = 0, bCr = 0;
-      state.business.forEach(b => { bDr += b.debit; bCr += b.credit; });
-      let bNet = bCr - bDr;
+      const business = calculateBusinessStatements();
+      const bDr = business.expenses;
+      const bCr = business.revenue;
+      const bNet = business.netIncome;
       let combinedNet = wNet + bNet;
 
       return { wInc, wExp, wNet, bDr, bCr, bNet, combinedNet };
@@ -1707,9 +2163,7 @@
       document.getElementById('ai-status').innerText = 'ONLINE';
     }
 
-    /* ==========================================================================
-       11. SYSTEM NOTIFICATIONS & CLOCK
-       ========================================================================== */
+    /* 11. NOTIFICATIONS & CLOCK */
     function showRetroAlert(msg) {
       soundAlert();
       const alertWin = document.getElementById('retro-alert');
